@@ -1,0 +1,30 @@
+Food Group,Food Category,Servings Low,Servings High,Servings Median,Serving Size,Calories,Protein,Fibre,Carbs,Sugar,Total Fat
+Fruits,Apples,2,4,3,1 medium apple (182g),95,0.5,4.4,25,19,0.3
+Fruits,Bananas,1,3,2,1 medium banana (118g),105,1.3,3.1,27,14,0.4
+Fruits,Oranges,1,3,2,1 medium orange (131g),62,1.2,3.1,15,12,0.2
+Fruits,Berries,1,2,2,1 cup mixed berries (150g),85,1.5,4,20,12,0.5
+Fruits,Grapes,1,2,1,1 cup grapes (151g),104,1.1,1.4,27,23,0.2
+Vegetables,Leafy Greens,2,4,3,2 cups raw spinach/kale (60g),14,1.7,1.3,2,0.3,0.2
+Vegetables,Carrots,1,3,2,1 medium carrot (61g),25,0.6,1.7,6,2.9,0.1
+Vegetables,Broccoli,1,3,2,1 cup chopped (91g),31,2.5,2.4,6,1.5,0.3
+Vegetables,Tomatoes,1,3,2,1 medium tomato (123g),22,1.1,1.5,5,3.2,0.2
+Vegetables,Bell Peppers,1,2,1,1 medium pepper (119g),24,1,1.7,6,2.4,0.2
+Vegetables,Cucumbers,1,2,1,1/2 medium cucumber (104g),8,0.3,0.3,2,1,0.1
+Grains,Whole Wheat Bread,3,6,4,1 slice (43g),81,4,1.9,15,1.4,1.1
+Grains,Brown Rice,2,4,3,1/2 cup cooked (98g),109,2.3,1.8,23,0.4,0.9
+Grains,Oatmeal,1,2,1,1/2 cup dry oats (40g),150,5,4,27,1,3
+Grains,Quinoa,1,2,1,1/2 cup cooked (92g),111,4.1,2.6,20,0.9,1.8
+Grains,Pasta,1,3,2,1 cup cooked (140g),220,8.1,2.5,43,0.8,1.3
+Protein,Chicken Breast,2,4,3,3 oz cooked (85g),128,26,0,0,0,2.7
+Protein,Salmon,1,3,2,3 oz cooked (85g),177,17,0,0,0,11
+Protein,Eggs,1,3,2,1 large egg (50g),72,6.3,0,0.4,0.2,5
+Protein,Tofu,1,3,2,1/2 cup firm (126g),94,10,0.5,2,0.5,5
+Protein,Lean Beef,1,2,1,3 oz cooked (85g),170,25,0,0,0,7
+Protein,Legumes,1,3,2,1/2 cup cooked beans (86g),114,7.6,7.5,20,0.4,0.5
+Dairy,Milk,2,3,2,1 cup (244ml),103,8.2,0,12,12,2.4
+Dairy,Greek Yogurt,1,2,2,3/4 cup (170g),100,17,0,6,4,0.7
+Dairy,Cheese,1,2,1,1 oz cheddar (28g),113,7,0,0.4,0.1,9
+Fats & Oils,Olive Oil,2,4,3,1 tablespoon (14g),119,0,0,0,0,13.5
+Fats & Oils,Nuts,1,2,1,1 oz almonds (28g),164,6,3.5,6,1,14
+Fats & Oils,Avocado,1,2,1,1/2 medium (68g),114,1.4,4.6,6,0.2,10.5
+Fats & Oils,Seeds,1,2,1,1 tablespoon chia seeds (12g),58,2,4,5,0,3.7

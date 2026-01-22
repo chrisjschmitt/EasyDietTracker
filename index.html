@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Easy Diet Tracker</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon.svg">
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="logo">
+                    <span class="logo-icon">🥗</span>
+                    <span class="logo-text">EasyDiet</span>
+                </h1>
+                <button class="settings-btn" id="settingsBtn" aria-label="Settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Screen -->
+        <main class="main-screen" id="mainScreen">
+            <!-- Stats Dashboard -->
+            <section class="stats-dashboard">
+                <div class="calorie-ring clickable-stat" data-nutrient="calories" role="button" tabindex="0">
+                    <svg class="ring-svg" viewBox="0 0 120 120">
+                        <defs>
+                            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#e8a756"/>
+                                <stop offset="100%" style="stop-color:#56c4a8"/>
+                            </linearGradient>
+                        </defs>
+                        <circle class="ring-bg" cx="60" cy="60" r="52"/>
+                        <circle class="ring-progress" cx="60" cy="60" r="52" id="calorieRing" stroke="url(#ringGradient)"/>
+                    </svg>
+                    <div class="ring-content">
+                        <span class="calories-consumed" id="caloriesConsumed">0</span>
+                        <span class="calories-label">of <span id="calorieTarget">2000</span> cal</span>
+                    </div>
+                    <button class="exercise-btn" id="exerciseBtn" title="Add exercise calories">
+                        <span class="exercise-icon">🏃</span>
+                        <span class="exercise-value" id="exerciseValue">+0</span>
+                    </button>
+                </div>
+                <div class="macro-bars">
+                    <div class="macro-item clickable-stat" data-nutrient="protein" role="button" tabindex="0">
+                        <div class="macro-header">
+                            <span class="macro-label">Protein</span>
+                            <span class="macro-value" id="proteinValue">0g</span>
+                        </div>
+                        <div class="macro-bar">
+                            <div class="macro-fill protein" id="proteinBar"></div>
+                        </div>
+                    </div>
+                    <div class="macro-item clickable-stat" data-nutrient="carbs" role="button" tabindex="0">
+                        <div class="macro-header">
+                            <span class="macro-label">Carbs</span>
+                            <span class="macro-value" id="carbsValue">0g</span>
+                        </div>
+                        <div class="macro-bar">
+                            <div class="macro-fill carbs" id="carbsBar"></div>
+                        </div>
+                    </div>
+                    <div class="macro-item clickable-stat" data-nutrient="fat" role="button" tabindex="0">
+                        <div class="macro-header">
+                            <span class="macro-label">Fat</span>
+                            <span class="macro-value" id="fatValue">0g</span>
+                        </div>
+                        <div class="macro-bar">
+                            <div class="macro-fill fat" id="fatBar"></div>
+                        </div>
+                    </div>
+                    <div class="macro-item clickable-stat" data-nutrient="fibre" role="button" tabindex="0">
+                        <div class="macro-header">
+                            <span class="macro-label">Fibre</span>
+                            <span class="macro-value" id="fibreValue">0g</span>
+                        </div>
+                        <div class="macro-bar">
+                            <div class="macro-fill fibre" id="fibreBar"></div>
+                        </div>
+                    </div>
+                    <div class="macro-item clickable-stat" data-nutrient="sugar" role="button" tabindex="0">
+                        <div class="macro-header">
+                            <span class="macro-label">Sugar</span>
+                            <span class="macro-value" id="sugarValue">0g</span>
+                        </div>
+                        <div class="macro-bar">
+                            <div class="macro-fill sugar" id="sugarBar"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Food Groups Container -->
+            <section class="food-groups-container" id="foodGroupsContainer">
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon">📊</div>
+                    <h2>No Food Data Loaded</h2>
+                    <p>Go to Settings to import your food database (XLS file)</p>
+                    <button class="btn btn-primary" id="goToSettingsBtn">Open Settings</button>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-btn history-btn" id="historyBtn" title="View history">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                </button>
+                <button class="action-btn log-btn" id="logDayBtn" title="Log today's totals">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                </button>
+            </div>
+            <button class="reset-btn" id="resetDayBtn" title="Tap: Reset servings | Long press: Clear cache & reload">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                </svg>
+            </button>
+        </main>
+
+        <!-- Settings Screen -->
+        <div class="settings-screen" id="settingsScreen">
+            <div class="settings-header">
+                <button class="back-btn" id="backBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h2>Settings</h2>
+            </div>
+
+            <div class="settings-content">
+                <!-- Calorie Settings -->
+                <div class="settings-section">
+                    <h3 class="section-title">Calorie Targets</h3>
+                    
+                    <div class="setting-item">
+                        <label for="baseCalories">Base Daily Calories</label>
+                        <div class="input-group">
+                            <input type="number" id="baseCalories" value="1800" min="500" max="5000">
+                            <span class="input-unit">cal</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="activityLevel">Activity Level</label>
+                        <select id="activityLevel">
+                            <option value="low">Low (+0 cal)</option>
+                            <option value="moderate" selected>Moderate (+200 cal)</option>
+                            <option value="high">High (+400 cal)</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item readonly">
+                        <label>Activity Allowance</label>
+                        <div class="input-group">
+                            <input type="text" id="activityAllowance" value="200" readonly>
+                            <span class="input-unit">cal</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item readonly highlight">
+                        <label>Total Daily Target</label>
+                        <div class="input-group">
+                            <input type="text" id="totalTarget" value="2000" readonly>
+                            <span class="input-unit">cal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Macro Targets -->
+                <div class="settings-section">
+                    <h3 class="section-title">Daily Macro Targets</h3>
+                    
+                    <div class="setting-item">
+                        <label for="proteinTarget">Protein</label>
+                        <div class="input-group">
+                            <input type="number" id="proteinTarget" value="50" min="0" max="500">
+                            <span class="input-unit">g</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="carbsTarget">Carbohydrates</label>
+                        <div class="input-group">
+                            <input type="number" id="carbsTarget" value="250" min="0" max="1000">
+                            <span class="input-unit">g</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="fatTarget">Fat</label>
+                        <div class="input-group">
+                            <input type="number" id="fatTarget" value="65" min="0" max="500">
+                            <span class="input-unit">g</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="fibreTarget">Fibre</label>
+                        <div class="input-group">
+                            <input type="number" id="fibreTarget" value="25" min="0" max="200">
+                            <span class="input-unit">g</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="sugarTarget">Sugar (max)</label>
+                        <div class="input-group">
+                            <input type="number" id="sugarTarget" value="50" min="0" max="500">
+                            <span class="input-unit">g</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Measurement Settings -->
+                <div class="settings-section">
+                    <h3 class="section-title">Measurements</h3>
+                    
+                    <div class="setting-item">
+                        <label>Unit System</label>
+                        <div class="toggle-group">
+                            <button class="toggle-btn active" data-value="metric" id="metricBtn">Metric</button>
+                            <button class="toggle-btn" data-value="imperial" id="imperialBtn">Imperial</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Food Database -->
+                <div class="settings-section">
+                    <h3 class="section-title">Food Database</h3>
+                    
+                    <div class="setting-item">
+                        <label>Import Food Data (XLS/XLSX/CSV)</label>
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <input type="file" id="fileInput" accept=".xls,.xlsx,.csv" hidden>
+                            <div class="upload-content">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                <p>Tap to select file or drag & drop</p>
+                                <span class="file-types">Supports .xls, .xlsx, and .csv files</span>
+                            </div>
+                        </div>
+                        <div class="file-info" id="fileInfo" hidden>
+                            <span class="file-name" id="fileName"></span>
+                            <span class="food-count" id="foodCount"></span>
+                            <button class="clear-data-btn" id="clearDataBtn">Clear Data</button>
+                        </div>
+                    </div>
+
+                    <div class="expected-format">
+                        <h4>Expected Columns:</h4>
+                        <code>Food Group, Food Category, Servings Low, Servings High, Servings Median, Serving Size, Calories, Protein, Fibre, Carbs, Sugar, Total Fat</code>
+                        <p style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">A sample-data.csv file is included with the app for testing.</p>
+                    </div>
+                </div>
+
+                <!-- About Section -->
+                <div class="settings-section about-section">
+                    <h3 class="section-title">About</h3>
+                    <p class="app-version">EasyDiet Tracker v1.0</p>
+                    <p class="app-description">Track your daily food intake by food groups. Tap food icons to add servings, long-press for precise input.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Food Info Modal -->
+        <div class="modal-overlay" id="foodInfoModal">
+            <div class="modal-content info-modal">
+                <button class="modal-close" id="closeInfoModal">×</button>
+                <div class="food-info-header">
+                    <span class="food-info-icon" id="infoIcon"></span>
+                    <h3 id="infoCategoryName"></h3>
+                </div>
+                <div class="food-info-body">
+                    <div class="info-row">
+                        <span class="info-label">Food Group</span>
+                        <span class="info-value" id="infoFoodGroup"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Serving Size</span>
+                        <span class="info-value" id="infoServingSize"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Recommended Daily</span>
+                        <span class="info-value" id="infoRecommended"></span>
+                    </div>
+                    <div class="info-divider"></div>
+                    <h4>Per Serving</h4>
+                    <div class="nutrition-grid">
+                        <div class="nutrition-item">
+                            <span class="nutrition-value" id="infoCalories">0</span>
+                            <span class="nutrition-label">Calories</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span class="nutrition-value" id="infoProtein">0g</span>
+                            <span class="nutrition-label">Protein</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span class="nutrition-value" id="infoCarbs">0g</span>
+                            <span class="nutrition-label">Carbs</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span class="nutrition-value" id="infoFat">0g</span>
+                            <span class="nutrition-label">Fat</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span class="nutrition-value" id="infoFibre">0g</span>
+                            <span class="nutrition-label">Fibre</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span class="nutrition-value" id="infoSugar">0g</span>
+                            <span class="nutrition-label">Sugar</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Modal -->
+        <div class="modal-overlay" id="historyModal">
+            <div class="modal-content history-modal">
+                <button class="modal-close" id="closeHistoryModal">×</button>
+                <div class="history-header">
+                    <span class="history-icon">📅</span>
+                    <h3>Daily Log History</h3>
+                </div>
+                <div class="history-list" id="historyList">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="history-empty" id="historyEmpty">
+                    <p>No logs yet. Tap the save icon to log today's totals.</p>
+                </div>
+                <div class="history-actions">
+                    <button class="btn btn-secondary" id="exportHistoryBtn">Export CSV</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nutrient Breakdown Modal -->
+        <div class="modal-overlay" id="breakdownModal">
+            <div class="modal-content breakdown-modal">
+                <button class="modal-close" id="closeBreakdownModal">×</button>
+                <div class="breakdown-header">
+                    <span class="breakdown-icon" id="breakdownIcon">🔥</span>
+                    <div class="breakdown-title">
+                        <h3 id="breakdownTitle">Calories</h3>
+                        <span class="breakdown-total" id="breakdownTotal">0</span>
+                    </div>
+                </div>
+                <div class="breakdown-list" id="breakdownList">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="breakdown-empty" id="breakdownEmpty">
+                    <p>No foods consumed yet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise Input Modal -->
+        <div class="modal-overlay" id="exerciseModal">
+            <div class="modal-content exercise-modal">
+                <button class="modal-close" id="closeExerciseModal">×</button>
+                <div class="exercise-modal-header">
+                    <span class="exercise-modal-icon">🏃</span>
+                    <h3>Exercise Bonus</h3>
+                </div>
+                <div class="exercise-modal-body">
+                    <p class="exercise-description">Add extra calories burned from exercise beyond your normal activity level.</p>
+                    <label>Calories Burned</label>
+                    <div class="exercise-input-group">
+                        <button class="exercise-adjust-btn" id="decreaseExercise">−</button>
+                        <input type="number" id="exerciseInput" step="50" min="0" max="5000" value="0">
+                        <button class="exercise-adjust-btn" id="increaseExercise">+</button>
+                    </div>
+                    <div class="exercise-presets">
+                        <button class="preset-btn" data-value="100">+100</button>
+                        <button class="preset-btn" data-value="200">+200</button>
+                        <button class="preset-btn" data-value="300">+300</button>
+                        <button class="preset-btn" data-value="500">+500</button>
+                    </div>
+                    <button class="btn btn-primary" id="saveExercise">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Serving Input Modal -->
+        <div class="modal-overlay" id="servingModal">
+            <div class="modal-content serving-modal">
+                <button class="modal-close" id="closeServingModal">×</button>
+                <div class="serving-modal-header">
+                    <span class="serving-modal-icon" id="servingIcon"></span>
+                    <h3 id="servingCategoryName"></h3>
+                </div>
+                <div class="serving-modal-body">
+                    <label>Enter Servings</label>
+                    <div class="serving-input-group">
+                        <button class="serving-adjust-btn" id="decreaseServing">−</button>
+                        <input type="number" id="servingInput" step="0.1" min="0" max="99" value="0">
+                        <button class="serving-adjust-btn" id="increaseServing">+</button>
+                    </div>
+                    <button class="btn btn-primary" id="saveServing">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SheetJS Library for XLS parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="db.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

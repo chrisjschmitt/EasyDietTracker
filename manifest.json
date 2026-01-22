@@ -1,0 +1,35 @@
+{
+    "name": "EasyDiet Tracker",
+    "short_name": "EasyDiet",
+    "description": "Track your daily food consumption by food groups with ease",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0f1419",
+    "theme_color": "#1a1a2e",
+    "orientation": "portrait-primary",
+    "scope": "/",
+    "icons": [
+        {
+            "src": "icons/icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "icons/icon.svg",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "maskable"
+        }
+    ],
+    "categories": ["health", "lifestyle", "food"],
+    "shortcuts": [
+        {
+            "name": "Settings",
+            "short_name": "Settings",
+            "description": "Open app settings",
+            "url": "/?action=settings",
+            "icons": [{ "src": "icons/icon.svg", "sizes": "any" }]
+        }
+    ]
+}

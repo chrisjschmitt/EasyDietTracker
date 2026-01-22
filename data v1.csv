@@ -1,0 +1,32 @@
+Food Group,Food Category,Servings Low,Servings High,Servings Median,Serving Size,Calories,Protein,Fibre,Carbs,Sugar,Total Fat
+Fruits,"Apples, bananas, Oranges",1,4,3,One medium fruit,87,1,3.5,22,15,
+Fruits,Berries,1,2,2,1 cup mixed berries,85,1.5,4,20,12,0.5
+Fruits,Grapes,1,2,1,1 cup grapes (151g),104,1.1,1.4,27,23,0.2
+Vegetables,"Calorie-free veggies (leafy greens, celery, cucumber, mushrooms)",2,4,3,Size of fist,7,0.5,1,1,0.5,0.1
+Vegetables,"Low calorie veggies (Carrots, Tomatoes, broccoli, cauliflower, green beans)",1,3,2,1 cup or medium sized veggie,26,1.3,1.8,5.75,2.5,0.2
+Vegetables,"Starchy veggies (potatoes, sweet potatoes, corn, parsnips)",1,2,1,1 cup or medium sized,140,3,4,32,4,0.5
+Vegetables,"Fatty veggies (Avocado, Olives) ",1,2,1,1/2 cup or half,120,1.5,5,6,1,11
+Grains,Whole Wheat Bread,3,6,4,1 slice (43g),81,4,1.9,15,1.4,1.1
+Grains,"Brown rice, Quinoa",1,3,2,1/2 cup cooked (98g),110,3.2,2.2,21,0.7,1.4
+Grains,Oatmeal,1,2,1,1/2 cup dry oats (40g),150,5,4,27,1,3
+Grains,Quinoa,1,2,1,1/2 cup cooked (92g),111,4.1,2.6,20,0.9,1.8
+Grains,Pasta,1,3,2,1 cup cooked (140g),220,8.1,2.5,43,0.8,1.3
+Protein,"Chicken Breast, Salmon, Trout",2,3,2,Palm of hand,150,25,0,0,0,6
+Protein,"Lean fish, seafood (cod, haddock, shrimp, scallops)",2,3,2,"Palm, cupped palm",90,20,0,0,0,11
+Protein,"Beef, pork, poultry (dark meat)",2,3,2,"Palm of hand, thickness included",225,25,0,0,0,10
+Protein,Eggs,0,1,1,2 eggs,140,12,0,1,1,10
+Protein,Tofu,1,3,2,Cupped palm,94,10,0.5,2,0.5,5
+Protein,"Legumes (chick peas, lentils, edamame)",1,3,2,Cupped palm,114,7.6,7.5,20,0.4,0.5
+Dairy,Milk,2,3,2,1 cup (244ml),103,8.2,0,12,12,2.4
+Dairy,Greek Yogurt,1,2,2,3/4 cup (170g),100,17,0,6,4,0.7
+Dairy,Cheese,1,2,1,1 oz cheddar (28g),113,7,0,0.4,0.1,9
+Fats & Oils,Olive Oil,2,4,3,1 tablespoon (14g),119,0,0,0,0,13.5
+Fats & Oils,Nuts,1,2,1,1 oz almonds (28g),164,6,3.5,6,1,14
+Fats & Oils,Avocado,1,2,1,1/2 medium (68g),114,1.4,4.6,6,0.2,10.5
+Fats & Oils,Seeds,1,2,1,1 tablespoon chia seeds (12g),58,2,4,5,0,3.7
+Sweetner,"Sugar, honey, maple syrup",0,1,1,Thumb tip,20,0,0,0,5,0
+Snacks,"Light snack - popcorn, no butter",1,2,1,3 cups,90,3,3.5,,0,0
+Snacks,"Cookies, chocolate",0,1,0,Palm centre,150,2,0,,20,
+Beverages,"Water, diet pop",8,12,10,Cup or small glass,0,0,0,0,0,0
+Beverages,"Non-alcoholic drinks (fruit juice, pop)",,,,Can,110,0,0,0,25,
+Beverages,"Alcoholic drinks (beer, wine, spirits)",0,1,0,"Small can, 1/2 glass. 2 fingers",150,0,0,0,2,0
