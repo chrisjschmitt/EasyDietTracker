@@ -24,6 +24,7 @@
     --fat-color: #12c2e9;
     --fibre-color: #7dd56f;
     --sugar-color: #ff6b6b;
+    --ultra-processed-color: #9b59b6;
     
     --success: #7dd56f;
     --warning: #f5af19;
@@ -369,6 +370,7 @@ h1, h2, h3, h4 {
 .macro-fill.fat { background: var(--fat-color); }
 .macro-fill.fibre { background: var(--fibre-color); }
 .macro-fill.sugar { background: var(--sugar-color); }
+.macro-fill.ultra-processed { background: var(--ultra-processed-color); }
 
 /* ============================================
    Food Groups
@@ -1133,6 +1135,17 @@ select:focus {
     font-size: 0.7rem;
     color: var(--text-muted);
     text-transform: uppercase;
+}
+
+.ultra-processed-badge {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(155, 89, 182, 0.15);
+    border: 1px solid var(--ultra-processed-color);
+    border-radius: var(--radius-md);
+    color: var(--ultra-processed-color);
+    font-size: 0.85rem;
+    text-align: center;
 }
 
 /* History Modal */

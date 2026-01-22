@@ -100,7 +100,8 @@ const AppState = {
         carbsTarget: 250,
         fatTarget: 65,
         fibreTarget: 25,
-        sugarTarget: 50
+        sugarTarget: 50,
+        ultraProcessedTarget: 3
     },
     foods: [],
     servings: {},
@@ -147,6 +148,8 @@ function cacheDOMElements() {
     DOM.fibreBar = document.getElementById('fibreBar');
     DOM.sugarValue = document.getElementById('sugarValue');
     DOM.sugarBar = document.getElementById('sugarBar');
+    DOM.ultraProcessedValue = document.getElementById('ultraProcessedValue');
+    DOM.ultraProcessedBar = document.getElementById('ultraProcessedBar');
     
     // Breakdown modal
     DOM.breakdownModal = document.getElementById('breakdownModal');
@@ -173,6 +176,7 @@ function cacheDOMElements() {
     DOM.fatTargetInput = document.getElementById('fatTarget');
     DOM.fibreTargetInput = document.getElementById('fibreTarget');
     DOM.sugarTargetInput = document.getElementById('sugarTarget');
+    DOM.ultraProcessedTargetInput = document.getElementById('ultraProcessedTarget');
     
     // Settings inputs
     DOM.baseCalories = document.getElementById('baseCalories');
@@ -225,6 +229,7 @@ function cacheDOMElements() {
     DOM.infoFat = document.getElementById('infoFat');
     DOM.infoFibre = document.getElementById('infoFibre');
     DOM.infoSugar = document.getElementById('infoSugar');
+    DOM.infoUltraProcessed = document.getElementById('infoUltraProcessed');
     
     // Serving modal elements
     DOM.servingIcon = document.getElementById('servingIcon');
@@ -336,6 +341,7 @@ async function loadSettings() {
     AppState.settings.fatTarget = settings.fatTarget || 65;
     AppState.settings.fibreTarget = settings.fibreTarget || 25;
     AppState.settings.sugarTarget = settings.sugarTarget || 50;
+    AppState.settings.ultraProcessedTarget = settings.ultraProcessedTarget || 3;
     AppState.isDefaultData = settings.isDefaultData || false;
     
     // Update UI
@@ -346,6 +352,7 @@ async function loadSettings() {
     DOM.fatTargetInput.value = AppState.settings.fatTarget;
     DOM.fibreTargetInput.value = AppState.settings.fibreTarget;
     DOM.sugarTargetInput.value = AppState.settings.sugarTarget;
+    DOM.ultraProcessedTargetInput.value = AppState.settings.ultraProcessedTarget;
     updateActivityAllowance();
     updateUnitSystemUI();
 }
@@ -425,7 +432,8 @@ function parseSpreadsheet(file) {
                     addedSugar: findColumn(headers, ['added sugar', 'addedsugar', 'added sugars']),
                     totalFat: findColumn(headers, ['total fat', 'totalfat', 'fat', 'fats']),
                     saturatedFat: findColumn(headers, ['saturated fat', 'saturatedfat', 'sat fat']),
-                    transFat: findColumn(headers, ['trans fat', 'transfat'])
+                    transFat: findColumn(headers, ['trans fat', 'transfat']),
+                    ultraProcessed: findColumn(headers, ['ultra-processed', 'ultraprocessed', 'ultra processed'])
                 };
                 
                 // Parse rows
@@ -448,7 +456,8 @@ function parseSpreadsheet(file) {
                         addedSugar: parseFloat(row[cols.addedSugar]) || 0,
                         totalFat: parseFloat(row[cols.totalFat]) || 0,
                         saturatedFat: parseFloat(row[cols.saturatedFat]) || 0,
-                        transFat: parseFloat(row[cols.transFat]) || 0
+                        transFat: parseFloat(row[cols.transFat]) || 0,
+                        ultraProcessed: cols.ultraProcessed !== -1 ? (row[cols.ultraProcessed]?.toString().toLowerCase() === 'true') : false
                     });
                 }
                 
@@ -577,7 +586,8 @@ function parseCSVText(csvText) {
         addedSugar: findColumn(headers, ['added sugar', 'addedsugar', 'added sugars']),
         totalFat: findColumn(headers, ['total fat', 'totalfat', 'fat', 'fats']),
         saturatedFat: findColumn(headers, ['saturated fat', 'saturatedfat', 'sat fat']),
-        transFat: findColumn(headers, ['trans fat', 'transfat'])
+        transFat: findColumn(headers, ['trans fat', 'transfat']),
+        ultraProcessed: findColumn(headers, ['ultra-processed', 'ultraprocessed', 'ultra processed'])
     };
     
     const foods = [];
@@ -607,7 +617,8 @@ function parseCSVText(csvText) {
             addedSugar: parseFloat(row[cols.addedSugar]) || 0,
             totalFat: parseFloat(row[cols.totalFat]) || 0,
             saturatedFat: parseFloat(row[cols.saturatedFat]) || 0,
-            transFat: parseFloat(row[cols.transFat]) || 0
+            transFat: parseFloat(row[cols.transFat]) || 0,
+            ultraProcessed: cols.ultraProcessed !== -1 ? (row[cols.ultraProcessed]?.toLowerCase() === 'true') : false
         });
     }
     
@@ -768,6 +779,7 @@ function updateStats() {
     let totalSatTransFat = 0;
     let totalFibre = 0;
     let totalAddedSugar = 0;
+    let totalUltraProcessed = 0;
     
     AppState.foods.forEach(food => {
         const servings = AppState.servings[food.id] || 0;
@@ -777,6 +789,9 @@ function updateStats() {
         totalSatTransFat += ((food.saturatedFat || 0) + (food.transFat || 0)) * servings;
         totalFibre += food.fibre * servings;
         totalAddedSugar += (food.addedSugar || 0) * servings;
+        if (food.ultraProcessed) {
+            totalUltraProcessed += servings;
+        }
     });
     
     const target = calculateTotalTarget();
@@ -806,15 +821,17 @@ function updateStats() {
     DOM.fatValue.textContent = `${Math.round(totalSatTransFat)}g`;
     DOM.fibreValue.textContent = `${Math.round(totalFibre)}g`;
     DOM.sugarValue.textContent = `${Math.round(totalAddedSugar)}g`;
+    DOM.ultraProcessedValue.textContent = `${totalUltraProcessed}`;
     
     // Update macro bars using configurable targets
-    const { proteinTarget, carbsTarget, fatTarget, fibreTarget, sugarTarget } = AppState.settings;
+    const { proteinTarget, carbsTarget, fatTarget, fibreTarget, sugarTarget, ultraProcessedTarget } = AppState.settings;
     
     DOM.proteinBar.style.width = proteinTarget > 0 ? `${Math.min((totalProtein / proteinTarget) * 100, 100)}%` : '0%';
     DOM.carbsBar.style.width = carbsTarget > 0 ? `${Math.min((totalCarbs / carbsTarget) * 100, 100)}%` : '0%';
     DOM.fatBar.style.width = fatTarget > 0 ? `${Math.min((totalSatTransFat / fatTarget) * 100, 100)}%` : '0%';
     DOM.fibreBar.style.width = fibreTarget > 0 ? `${Math.min((totalFibre / fibreTarget) * 100, 100)}%` : '0%';
     DOM.sugarBar.style.width = sugarTarget > 0 ? `${Math.min((totalAddedSugar / sugarTarget) * 100, 100)}%` : '0%';
+    DOM.ultraProcessedBar.style.width = ultraProcessedTarget > 0 ? `${Math.min((totalUltraProcessed / ultraProcessedTarget) * 100, 100)}%` : '0%';
 }
 
 // ============================================
@@ -983,6 +1000,7 @@ function showFoodInfo(foodId) {
     DOM.infoFat.textContent = `${formatNumber((food.saturatedFat || 0) + (food.transFat || 0))}g`;
     DOM.infoFibre.textContent = `${formatNumber(food.fibre)}g`;
     DOM.infoSugar.textContent = `${formatNumber(food.addedSugar || 0)}g`;
+    DOM.infoUltraProcessed.hidden = !food.ultraProcessed;
     
     DOM.foodInfoModal.classList.add('active');
 }
@@ -1027,6 +1045,12 @@ function showBreakdown(nutrient) {
             title: 'Added Sugar',
             unit: 'g',
             getValue: (food) => food.addedSugar || 0
+        },
+        ultraProcessed: {
+            icon: '🏭',
+            title: 'Ultra-processed',
+            unit: ' servings',
+            getValue: (food) => food.ultraProcessed ? 1 : 0
         }
     };
     
@@ -1483,6 +1507,12 @@ function setupEventListeners() {
     
     DOM.sugarTargetInput.addEventListener('change', async (e) => {
         AppState.settings.sugarTarget = parseInt(e.target.value) || 50;
+        await saveSettings();
+        updateStats();
+    });
+    
+    DOM.ultraProcessedTargetInput.addEventListener('change', async (e) => {
+        AppState.settings.ultraProcessedTarget = parseInt(e.target.value) || 3;
         await saveSettings();
         updateStats();
     });
