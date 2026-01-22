@@ -105,7 +105,8 @@ const AppState = {
     foods: [],
     servings: {},
     exerciseCalories: 0,
-    currentFoodId: null
+    currentFoodId: null,
+    isDefaultData: false
 };
 
 // Activity level calorie bonuses
@@ -187,6 +188,7 @@ function cacheDOMElements() {
     DOM.fileInfo = document.getElementById('fileInfo');
     DOM.fileName = document.getElementById('fileName');
     DOM.foodCount = document.getElementById('foodCount');
+    DOM.importNewBtn = document.getElementById('importNewBtn');
     DOM.clearDataBtn = document.getElementById('clearDataBtn');
     
     // Action buttons
@@ -334,6 +336,7 @@ async function loadSettings() {
     AppState.settings.fatTarget = settings.fatTarget || 65;
     AppState.settings.fibreTarget = settings.fibreTarget || 25;
     AppState.settings.sugarTarget = settings.sugarTarget || 50;
+    AppState.isDefaultData = settings.isDefaultData || false;
     
     // Update UI
     DOM.baseCalories.value = AppState.settings.baseCalories;
@@ -419,7 +422,10 @@ function parseSpreadsheet(file) {
                     fibre: findColumn(headers, ['fibre', 'fiber']),
                     carbs: findColumn(headers, ['carbs', 'carbohydrates', 'carbohydrate']),
                     sugar: findColumn(headers, ['sugar', 'sugars']),
-                    totalFat: findColumn(headers, ['total fat', 'totalfat', 'fat', 'fats'])
+                    addedSugar: findColumn(headers, ['added sugar', 'addedsugar', 'added sugars']),
+                    totalFat: findColumn(headers, ['total fat', 'totalfat', 'fat', 'fats']),
+                    saturatedFat: findColumn(headers, ['saturated fat', 'saturatedfat', 'sat fat']),
+                    transFat: findColumn(headers, ['trans fat', 'transfat'])
                 };
                 
                 // Parse rows
@@ -439,7 +445,10 @@ function parseSpreadsheet(file) {
                         fibre: parseFloat(row[cols.fibre]) || 0,
                         carbs: parseFloat(row[cols.carbs]) || 0,
                         sugar: parseFloat(row[cols.sugar]) || 0,
-                        totalFat: parseFloat(row[cols.totalFat]) || 0
+                        addedSugar: parseFloat(row[cols.addedSugar]) || 0,
+                        totalFat: parseFloat(row[cols.totalFat]) || 0,
+                        saturatedFat: parseFloat(row[cols.saturatedFat]) || 0,
+                        transFat: parseFloat(row[cols.transFat]) || 0
                     });
                 }
                 
@@ -499,14 +508,135 @@ function findColumn(headers, possibleNames) {
 }
 
 /**
- * Load foods from database
+ * Load foods from database, or load defaults if empty
  */
 async function loadFoods() {
     AppState.foods = await db.getAllFoods();
+    
+    // If no foods loaded, try to load default data
+    if (AppState.foods.length === 0) {
+        await loadDefaultFoodData();
+    }
+    
     await loadTodayServings();
     renderFoodGroups();
     updateStats();
     updateFileInfo();
+}
+
+/**
+ * Load default food data from default-data.csv
+ */
+async function loadDefaultFoodData() {
+    try {
+        console.log('Loading default food data...');
+        const response = await fetch('default-data.csv');
+        if (!response.ok) {
+            console.warn('Could not load default-data.csv');
+            return;
+        }
+        
+        const csvText = await response.text();
+        const foods = parseCSVText(csvText);
+        
+        if (foods.length > 0) {
+            await db.saveFoods(foods);
+            AppState.foods = foods;
+            AppState.isDefaultData = true;
+            await db.saveSetting('isDefaultData', true);
+            console.log(`Loaded ${foods.length} default food categories`);
+        }
+    } catch (error) {
+        console.warn('Failed to load default food data:', error);
+    }
+}
+
+/**
+ * Parse CSV text into food objects
+ */
+function parseCSVText(csvText) {
+    const lines = csvText.split('\n').filter(line => line.trim());
+    if (lines.length < 2) return [];
+    
+    // Parse headers
+    const headerLine = lines[0];
+    const headers = parseCSVLine(headerLine).map(h => h.toLowerCase().trim());
+    
+    // Find column indices
+    const cols = {
+        foodGroup: findColumn(headers, ['food group', 'foodgroup', 'group']),
+        foodCategory: findColumn(headers, ['food category', 'foodcategory', 'category', 'food']),
+        servingsLow: findColumn(headers, ['servings low', 'servingslow', 'low']),
+        servingsHigh: findColumn(headers, ['servings high', 'servingshigh', 'high']),
+        servingSize: findColumn(headers, ['serving size', 'servingsize', 'portion']),
+        calories: findColumn(headers, ['calories', 'cals', 'kcal', 'energy']),
+        protein: findColumn(headers, ['protein', 'proteins']),
+        fibre: findColumn(headers, ['fibre', 'fiber']),
+        carbs: findColumn(headers, ['carbs', 'carbohydrates', 'carbohydrate']),
+        sugar: findColumn(headers, ['sugar', 'sugars']),
+        addedSugar: findColumn(headers, ['added sugar', 'addedsugar', 'added sugars']),
+        totalFat: findColumn(headers, ['total fat', 'totalfat', 'fat', 'fats']),
+        saturatedFat: findColumn(headers, ['saturated fat', 'saturatedfat', 'sat fat']),
+        transFat: findColumn(headers, ['trans fat', 'transfat'])
+    };
+    
+    const foods = [];
+    
+    // Parse data rows
+    for (let i = 1; i < lines.length; i++) {
+        const row = parseCSVLine(lines[i]);
+        if (row.length < 2) continue;
+        
+        const foodGroup = row[cols.foodGroup]?.trim() || '';
+        const foodCategory = row[cols.foodCategory]?.trim() || '';
+        
+        if (!foodGroup || !foodCategory) continue;
+        
+        foods.push({
+            id: `food_${i}_${Date.now()}`,
+            foodGroup,
+            foodCategory,
+            servingsLow: parseInt(row[cols.servingsLow]) || 0,
+            servingsHigh: parseInt(row[cols.servingsHigh]) || 0,
+            servingSize: row[cols.servingSize]?.trim() || '',
+            calories: parseFloat(row[cols.calories]) || 0,
+            protein: parseFloat(row[cols.protein]) || 0,
+            fibre: parseFloat(row[cols.fibre]) || 0,
+            carbs: parseFloat(row[cols.carbs]) || 0,
+            sugar: parseFloat(row[cols.sugar]) || 0,
+            addedSugar: parseFloat(row[cols.addedSugar]) || 0,
+            totalFat: parseFloat(row[cols.totalFat]) || 0,
+            saturatedFat: parseFloat(row[cols.saturatedFat]) || 0,
+            transFat: parseFloat(row[cols.transFat]) || 0
+        });
+    }
+    
+    return foods;
+}
+
+/**
+ * Parse a single CSV line handling quoted fields
+ */
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current);
+    
+    return result;
 }
 
 /**
@@ -520,18 +650,20 @@ async function loadTodayServings() {
 /**
  * Update file info display
  */
-async function updateFileInfo() {
-    const count = await db.getFoodCount();
+function updateFileInfo() {
+    const count = AppState.foods.length;
     
     if (count > 0) {
         DOM.fileUploadArea.style.display = 'none';
-        DOM.fileInfo.hidden = false;
-        DOM.fileName.textContent = 'Food database loaded';
+        DOM.fileInfo.removeAttribute('hidden');
+        DOM.fileInfo.style.display = 'flex';
+        DOM.fileName.textContent = AppState.isDefaultData ? 'Default database loaded' : 'Custom database loaded';
         DOM.foodCount.textContent = `${count} food categories`;
         DOM.emptyState.style.display = 'none';
     } else {
         DOM.fileUploadArea.style.display = 'block';
-        DOM.fileInfo.hidden = true;
+        DOM.fileInfo.setAttribute('hidden', '');
+        DOM.fileInfo.style.display = 'none';
         DOM.emptyState.style.display = 'block';
     }
 }
@@ -633,18 +765,18 @@ function updateStats() {
     let totalCalories = 0;
     let totalProtein = 0;
     let totalCarbs = 0;
-    let totalFat = 0;
+    let totalSatTransFat = 0;
     let totalFibre = 0;
-    let totalSugar = 0;
+    let totalAddedSugar = 0;
     
     AppState.foods.forEach(food => {
         const servings = AppState.servings[food.id] || 0;
         totalCalories += food.calories * servings;
         totalProtein += food.protein * servings;
         totalCarbs += food.carbs * servings;
-        totalFat += food.totalFat * servings;
+        totalSatTransFat += ((food.saturatedFat || 0) + (food.transFat || 0)) * servings;
         totalFibre += food.fibre * servings;
-        totalSugar += food.sugar * servings;
+        totalAddedSugar += (food.addedSugar || 0) * servings;
     });
     
     const target = calculateTotalTarget();
@@ -671,18 +803,18 @@ function updateStats() {
     // Update macro values
     DOM.proteinValue.textContent = `${Math.round(totalProtein)}g`;
     DOM.carbsValue.textContent = `${Math.round(totalCarbs)}g`;
-    DOM.fatValue.textContent = `${Math.round(totalFat)}g`;
+    DOM.fatValue.textContent = `${Math.round(totalSatTransFat)}g`;
     DOM.fibreValue.textContent = `${Math.round(totalFibre)}g`;
-    DOM.sugarValue.textContent = `${Math.round(totalSugar)}g`;
+    DOM.sugarValue.textContent = `${Math.round(totalAddedSugar)}g`;
     
     // Update macro bars using configurable targets
     const { proteinTarget, carbsTarget, fatTarget, fibreTarget, sugarTarget } = AppState.settings;
     
     DOM.proteinBar.style.width = proteinTarget > 0 ? `${Math.min((totalProtein / proteinTarget) * 100, 100)}%` : '0%';
     DOM.carbsBar.style.width = carbsTarget > 0 ? `${Math.min((totalCarbs / carbsTarget) * 100, 100)}%` : '0%';
-    DOM.fatBar.style.width = fatTarget > 0 ? `${Math.min((totalFat / fatTarget) * 100, 100)}%` : '0%';
+    DOM.fatBar.style.width = fatTarget > 0 ? `${Math.min((totalSatTransFat / fatTarget) * 100, 100)}%` : '0%';
     DOM.fibreBar.style.width = fibreTarget > 0 ? `${Math.min((totalFibre / fibreTarget) * 100, 100)}%` : '0%';
-    DOM.sugarBar.style.width = sugarTarget > 0 ? `${Math.min((totalSugar / sugarTarget) * 100, 100)}%` : '0%';
+    DOM.sugarBar.style.width = sugarTarget > 0 ? `${Math.min((totalAddedSugar / sugarTarget) * 100, 100)}%` : '0%';
 }
 
 // ============================================
@@ -848,9 +980,9 @@ function showFoodInfo(foodId) {
     DOM.infoCalories.textContent = formatNumber(food.calories);
     DOM.infoProtein.textContent = `${formatNumber(food.protein)}g`;
     DOM.infoCarbs.textContent = `${formatNumber(food.carbs)}g`;
-    DOM.infoFat.textContent = `${formatNumber(food.totalFat)}g`;
+    DOM.infoFat.textContent = `${formatNumber((food.saturatedFat || 0) + (food.transFat || 0))}g`;
     DOM.infoFibre.textContent = `${formatNumber(food.fibre)}g`;
-    DOM.infoSugar.textContent = `${formatNumber(food.sugar)}g`;
+    DOM.infoSugar.textContent = `${formatNumber(food.addedSugar || 0)}g`;
     
     DOM.foodInfoModal.classList.add('active');
 }
@@ -880,9 +1012,9 @@ function showBreakdown(nutrient) {
         },
         fat: {
             icon: '🥑',
-            title: 'Fat',
+            title: 'Sat/Trans Fat',
             unit: 'g',
-            getValue: (food) => food.totalFat
+            getValue: (food) => (food.saturatedFat || 0) + (food.transFat || 0)
         },
         fibre: {
             icon: '🥬',
@@ -892,9 +1024,9 @@ function showBreakdown(nutrient) {
         },
         sugar: {
             icon: '🍬',
-            title: 'Sugar',
+            title: 'Added Sugar',
             unit: 'g',
-            getValue: (food) => food.sugar
+            getValue: (food) => food.addedSugar || 0
         }
     };
     
@@ -1050,18 +1182,18 @@ async function logDay() {
     let totalCalories = 0;
     let totalProtein = 0;
     let totalCarbs = 0;
-    let totalFat = 0;
+    let totalSatTransFat = 0;
     let totalFibre = 0;
-    let totalSugar = 0;
+    let totalAddedSugar = 0;
     
     AppState.foods.forEach(food => {
         const servings = AppState.servings[food.id] || 0;
         totalCalories += food.calories * servings;
         totalProtein += food.protein * servings;
         totalCarbs += food.carbs * servings;
-        totalFat += food.totalFat * servings;
+        totalSatTransFat += ((food.saturatedFat || 0) + (food.transFat || 0)) * servings;
         totalFibre += food.fibre * servings;
-        totalSugar += food.sugar * servings;
+        totalAddedSugar += (food.addedSugar || 0) * servings;
     });
     
     const today = db.getTodayKey();
@@ -1071,9 +1203,9 @@ async function logDay() {
         calories: Math.round(totalCalories),
         protein: Math.round(totalProtein),
         carbs: Math.round(totalCarbs),
-        fat: Math.round(totalFat),
+        fat: Math.round(totalSatTransFat),
         fibre: Math.round(totalFibre),
-        sugar: Math.round(totalSugar),
+        sugar: Math.round(totalAddedSugar),
         calorieTarget: calculateTotalTarget(),
         exercise: AppState.exerciseCalories
     };
@@ -1082,7 +1214,7 @@ async function logDay() {
     await db.saveSetting(`log_${today}`, logEntry);
     
     // Show confirmation
-    alert(`Day logged!\n\nCalories: ${logEntry.calories} / ${logEntry.calorieTarget}\nProtein: ${logEntry.protein}g\nCarbs: ${logEntry.carbs}g\nFat: ${logEntry.fat}g\nFibre: ${logEntry.fibre}g\nSugar: ${logEntry.sugar}g`);
+    alert(`Day logged!\n\nCalories: ${logEntry.calories} / ${logEntry.calorieTarget}\nProtein: ${logEntry.protein}g\nCarbs: ${logEntry.carbs}g\nSat/Trans Fat: ${logEntry.fat}g\nFibre: ${logEntry.fibre}g\nAdded Sugar: ${logEntry.sugar}g`);
 }
 
 /**
@@ -1181,7 +1313,7 @@ async function exportHistory() {
     }
     
     // Create CSV content
-    const headers = ['Date', 'Calories', 'Target', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'Fibre (g)', 'Sugar (g)', 'Exercise'];
+    const headers = ['Date', 'Calories', 'Target', 'Protein (g)', 'Carbs (g)', 'Sat/Trans Fat (g)', 'Fibre (g)', 'Added Sugar (g)', 'Exercise'];
     const rows = logs.map(log => [
         log.date,
         log.calories,
@@ -1256,6 +1388,8 @@ async function handleFileUpload(file) {
         }
         
         await db.saveFoods(foods);
+        AppState.isDefaultData = false;
+        await db.saveSetting('isDefaultData', false);
         await loadFoods();
         
         alert(`Successfully imported ${foods.length} food categories!`);
@@ -1276,12 +1410,13 @@ async function clearFoodData() {
     
     await db.clearFoods();
     await db.resetTodayServings();
+    await db.saveSetting('isDefaultData', null); // Reset the flag
     AppState.foods = [];
     AppState.servings = {};
+    AppState.isDefaultData = false;
     
-    renderFoodGroups();
-    updateStats();
-    updateFileInfo();
+    // Reload foods (will trigger default data loading if empty)
+    await loadFoods();
 }
 
 // ============================================
@@ -1385,7 +1520,8 @@ function setupEventListeners() {
         handleFileUpload(e.dataTransfer.files[0]);
     });
     
-    // Clear data
+    // Import new data / Clear data
+    DOM.importNewBtn.addEventListener('click', () => DOM.fileInput.click());
     DOM.clearDataBtn.addEventListener('click', clearFoodData);
     
     // History and Log buttons

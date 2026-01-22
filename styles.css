@@ -918,8 +918,29 @@ select:focus {
     font-size: 0.85rem;
 }
 
-.clear-data-btn {
+.file-info-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
     margin-left: auto;
+}
+
+.import-new-btn {
+    background: none;
+    border: 1px solid var(--accent-secondary);
+    color: var(--accent-secondary);
+    font-size: 0.8rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.import-new-btn:hover {
+    background: var(--accent-secondary);
+    color: var(--bg-primary);
+}
+
+.clear-data-btn {
     background: none;
     border: 1px solid var(--danger);
     color: var(--danger);

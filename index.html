@@ -78,7 +78,7 @@
                     </div>
                     <div class="macro-item clickable-stat" data-nutrient="fat" role="button" tabindex="0">
                         <div class="macro-header">
-                            <span class="macro-label">Fat</span>
+                            <span class="macro-label">Sat/Trans Fat</span>
                             <span class="macro-value" id="fatValue">0g</span>
                         </div>
                         <div class="macro-bar">
@@ -96,7 +96,7 @@
                     </div>
                     <div class="macro-item clickable-stat" data-nutrient="sugar" role="button" tabindex="0">
                         <div class="macro-header">
-                            <span class="macro-label">Sugar</span>
+                            <span class="macro-label">Added Sugar</span>
                             <span class="macro-value" id="sugarValue">0g</span>
                         </div>
                         <div class="macro-bar">
@@ -211,7 +211,7 @@
                     </div>
 
                     <div class="setting-item">
-                        <label for="fatTarget">Fat</label>
+                        <label for="fatTarget">Sat/Trans Fat (max)</label>
                         <div class="input-group">
                             <input type="number" id="fatTarget" value="65" min="0" max="500">
                             <span class="input-unit">g</span>
@@ -227,7 +227,7 @@
                     </div>
 
                     <div class="setting-item">
-                        <label for="sugarTarget">Sugar (max)</label>
+                        <label for="sugarTarget">Added Sugar (max)</label>
                         <div class="input-group">
                             <input type="number" id="sugarTarget" value="50" min="0" max="500">
                             <span class="input-unit">g</span>
@@ -269,13 +269,16 @@
                         <div class="file-info" id="fileInfo" hidden>
                             <span class="file-name" id="fileName"></span>
                             <span class="food-count" id="foodCount"></span>
-                            <button class="clear-data-btn" id="clearDataBtn">Clear Data</button>
+                            <div class="file-info-buttons">
+                                <button class="import-new-btn" id="importNewBtn">Import New</button>
+                                <button class="clear-data-btn" id="clearDataBtn">Clear Data</button>
+                            </div>
                         </div>
                     </div>
 
                     <div class="expected-format">
                         <h4>Expected Columns:</h4>
-                        <code>Food Group, Food Category, Servings Low, Servings High, Servings Median, Serving Size, Calories, Protein, Fibre, Carbs, Sugar, Total Fat</code>
+                        <code>Food Group, Food Category, Servings Low, Servings High, Serving Size, Calories, Protein, Fibre, Carbs, Sugar, Added Sugar, Total Fat, Saturated Fat, Trans Fat</code>
                         <p style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">A sample-data.csv file is included with the app for testing.</p>
                     </div>
                 </div>
@@ -327,7 +330,7 @@
                         </div>
                         <div class="nutrition-item">
                             <span class="nutrition-value" id="infoFat">0g</span>
-                            <span class="nutrition-label">Fat</span>
+                            <span class="nutrition-label">Sat/Trans</span>
                         </div>
                         <div class="nutrition-item">
                             <span class="nutrition-value" id="infoFibre">0g</span>
@@ -335,7 +338,7 @@
                         </div>
                         <div class="nutrition-item">
                             <span class="nutrition-value" id="infoSugar">0g</span>
-                            <span class="nutrition-label">Sugar</span>
+                            <span class="nutrition-label">Added Sugar</span>
                         </div>
                     </div>
                 </div>
