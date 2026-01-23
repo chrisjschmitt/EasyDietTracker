@@ -1864,11 +1864,8 @@ function setupEventListeners() {
             // Don't trigger if clicking the exercise button
             if (e.target.closest('.exercise-btn')) return;
             
-            // Water tracker - increment water count
-            if (nutrient === 'water') {
-                incrementWater();
-                return;
-            }
+            // Water is calculated from food, no manual increment
+            if (nutrient === 'water') return;
             
             showBreakdown(nutrient);
         });
@@ -1898,11 +1895,8 @@ function setupEventListeners() {
             if (e.target.closest('.exercise-btn')) return;
             e.preventDefault();
             
-            // Water tracker - increment water count
-            if (nutrient === 'water') {
-                incrementWater();
-                return;
-            }
+            // Water is calculated from food, no manual increment
+            if (nutrient === 'water') return;
             
             showBreakdown(nutrient);
         });
