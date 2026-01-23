@@ -842,8 +842,8 @@ function updateStats() {
         }
     });
     
-    // Total water = manually added + water from food
-    const totalWater = AppState.waterCount + totalWaterFromFood;
+    // Water now comes only from food contributions
+    const totalWater = totalWaterFromFood;
     
     const target = calculateTotalTarget();
     const progress = Math.min(totalCalories / target, 1);
