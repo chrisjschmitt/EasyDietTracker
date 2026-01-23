@@ -1592,6 +1592,79 @@ select:focus {
     margin: 0;
 }
 
+/* Nutrient Info Modal */
+.nutrient-info-modal {
+    max-width: 400px;
+}
+
+.nutrient-info-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nutrient-info-icon {
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+}
+
+.nutrient-info-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.nutrient-info-body {
+    padding: var(--spacing-lg);
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.nutrient-info-body h4 {
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: 0.9rem;
+    color: var(--accent-primary);
+}
+
+.nutrient-info-body p {
+    margin: 0 0 var(--spacing-md) 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+.nutrient-info-body ul {
+    margin: 0 0 var(--spacing-md) 0;
+    padding-left: var(--spacing-lg);
+}
+
+.nutrient-info-body li {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.nutrient-target-info {
+    background: var(--bg-elevated);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-top: var(--spacing-md);
+}
+
+.nutrient-target-info strong {
+    color: var(--accent-secondary);
+}
+
 /* Exercise Modal */
 .exercise-modal-header {
     display: flex;

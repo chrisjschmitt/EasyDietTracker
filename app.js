@@ -162,6 +162,13 @@ function cacheDOMElements() {
     DOM.breakdownList = document.getElementById('breakdownList');
     DOM.breakdownEmpty = document.getElementById('breakdownEmpty');
     
+    // Nutrient info modal
+    DOM.nutrientInfoModal = document.getElementById('nutrientInfoModal');
+    DOM.closeNutrientInfoModal = document.getElementById('closeNutrientInfoModal');
+    DOM.nutrientInfoIcon = document.getElementById('nutrientInfoIcon');
+    DOM.nutrientInfoTitle = document.getElementById('nutrientInfoTitle');
+    DOM.nutrientInfoBody = document.getElementById('nutrientInfoBody');
+    
     // Exercise
     DOM.exerciseBtn = document.getElementById('exerciseBtn');
     DOM.exerciseValue = document.getElementById('exerciseValue');
@@ -1252,6 +1259,185 @@ function showBreakdown(nutrient) {
 }
 
 /**
+ * Show nutrient info modal with educational content
+ */
+function showNutrientInfo(nutrient) {
+    const nutrientInfo = {
+        calories: {
+            icon: '🔥',
+            title: 'Calories',
+            content: `
+                <h4>What are calories?</h4>
+                <p>Calories measure the energy your body gets from food. Your body needs energy for everything—breathing, thinking, moving, and more.</p>
+                
+                <h4>Why track calories?</h4>
+                <p>Tracking calories helps you understand your energy balance:</p>
+                <ul>
+                    <li>Eating more than you burn leads to weight gain</li>
+                    <li>Eating less than you burn leads to weight loss</li>
+                    <li>Balance maintains your current weight</li>
+                </ul>
+                
+                <div class="nutrient-target-info">
+                    <strong>Your target:</strong> ${AppState.settings.baseCalories + AppState.settings.activityCalories + (AppState.exerciseCalories || 0)} calories/day
+                </div>
+            `
+        },
+        protein: {
+            icon: '💪',
+            title: 'Protein',
+            content: `
+                <h4>Why track protein?</h4>
+                <p>Protein is essential for building and repairing tissues, making enzymes and hormones, and supporting immune function.</p>
+                
+                <h4>Benefits of adequate protein:</h4>
+                <ul>
+                    <li>Builds and maintains muscle mass</li>
+                    <li>Keeps you feeling full longer</li>
+                    <li>Supports bone health</li>
+                    <li>Helps with recovery after exercise</li>
+                </ul>
+                
+                <h4>Good sources:</h4>
+                <p>Lean meats, fish, eggs, dairy, legumes, nuts, and seeds.</p>
+                
+                <div class="nutrient-target-info">
+                    <strong>Your target:</strong> ${AppState.settings.proteinTarget}g minimum/day
+                </div>
+            `
+        },
+        water: {
+            icon: '💧',
+            title: 'Water',
+            content: `
+                <h4>Why track water?</h4>
+                <p>Water is essential for nearly every bodily function. Many people don't realize how much hydration they get from food.</p>
+                
+                <h4>Benefits of proper hydration:</h4>
+                <ul>
+                    <li>Regulates body temperature</li>
+                    <li>Lubricates joints</li>
+                    <li>Helps deliver nutrients to cells</li>
+                    <li>Improves energy and brain function</li>
+                    <li>Aids digestion</li>
+                </ul>
+                
+                <h4>Water from food:</h4>
+                <p>Fruits, vegetables, soups, and dairy all contribute to your daily water intake.</p>
+                
+                <div class="nutrient-target-info">
+                    <strong>Your target:</strong> ${AppState.settings.waterTarget} cups/day
+                </div>
+            `
+        },
+        fat: {
+            icon: '🧈',
+            title: 'Saturated & Trans Fat',
+            content: `
+                <h4>Why limit saturated and trans fats?</h4>
+                <p>While some fat is essential for health, saturated and trans fats can raise LDL ("bad") cholesterol and increase heart disease risk.</p>
+                
+                <h4>Health concerns:</h4>
+                <ul>
+                    <li>Increases LDL cholesterol</li>
+                    <li>Raises risk of heart disease</li>
+                    <li>Trans fats are particularly harmful</li>
+                    <li>Can contribute to inflammation</li>
+                </ul>
+                
+                <h4>Better alternatives:</h4>
+                <p>Choose unsaturated fats from olive oil, avocados, nuts, and fatty fish instead.</p>
+                
+                <div class="nutrient-target-info">
+                    <strong>Your limit:</strong> ${AppState.settings.fatTarget}g maximum/day
+                </div>
+            `
+        },
+        fibre: {
+            icon: '🌾',
+            title: 'Fibre',
+            content: `
+                <h4>Why track fibre?</h4>
+                <p>Fibre is crucial for digestive health and has numerous benefits for your overall wellbeing.</p>
+                
+                <h4>Benefits of fibre:</h4>
+                <ul>
+                    <li>Promotes healthy digestion</li>
+                    <li>Helps control blood sugar levels</li>
+                    <li>Lowers cholesterol</li>
+                    <li>Keeps you feeling full</li>
+                    <li>Feeds beneficial gut bacteria</li>
+                </ul>
+                
+                <h4>Good sources:</h4>
+                <p>Whole grains, legumes, fruits, vegetables, nuts, and seeds.</p>
+                
+                <div class="nutrient-target-info">
+                    <strong>Your target:</strong> ${AppState.settings.fibreTarget}g minimum/day
+                </div>
+            `
+        },
+        sugar: {
+            icon: '🍬',
+            title: 'Added Sugar',
+            content: `
+                <h4>Why limit added sugar?</h4>
+                <p>Added sugars provide calories without nutritional benefits. Unlike natural sugars in fruits, added sugars can harm your health.</p>
+                
+                <h4>Health concerns:</h4>
+                <ul>
+                    <li>Contributes to weight gain</li>
+                    <li>Increases risk of type 2 diabetes</li>
+                    <li>Can cause tooth decay</li>
+                    <li>May increase heart disease risk</li>
+                    <li>Can lead to energy crashes</li>
+                </ul>
+                
+                <h4>Tips:</h4>
+                <p>Check labels for hidden sugars. Natural sugars in whole fruits come with fibre and nutrients.</p>
+                
+                <div class="nutrient-target-info">
+                    <strong>Your limit:</strong> ${AppState.settings.sugarTarget}g maximum/day
+                </div>
+            `
+        },
+        ultraProcessed: {
+            icon: '🏭',
+            title: 'Ultra-Processed Foods',
+            content: `
+                <h4>What are ultra-processed foods?</h4>
+                <p>Ultra-processed foods are industrial formulations with many ingredients rarely used in home cooking—like high-fructose corn syrup, hydrogenated oils, and artificial additives.</p>
+                
+                <h4>Health concerns:</h4>
+                <ul>
+                    <li>Often high in calories, salt, sugar, and fat</li>
+                    <li>Low in fibre, vitamins, and minerals</li>
+                    <li>Designed to be hyper-palatable (easy to overeat)</li>
+                    <li>Associated with obesity and chronic diseases</li>
+                    <li>May disrupt appetite regulation</li>
+                </ul>
+                
+                <h4>Examples:</h4>
+                <p>Chips, cookies, sugary cereals, instant noodles, processed meats, and soft drinks.</p>
+                
+                <div class="nutrient-target-info">
+                    <strong>Your limit:</strong> ${AppState.settings.ultraProcessedTarget} servings maximum/day
+                </div>
+            `
+        }
+    };
+    
+    const info = nutrientInfo[nutrient];
+    if (!info) return;
+    
+    DOM.nutrientInfoIcon.textContent = info.icon;
+    DOM.nutrientInfoTitle.textContent = info.title;
+    DOM.nutrientInfoBody.innerHTML = info.content;
+    
+    DOM.nutrientInfoModal.classList.add('active');
+}
+
+/**
  * Show serving input modal
  */
 function showServingModal(foodId) {
@@ -1277,6 +1463,7 @@ function closeModals() {
     DOM.servingModal.classList.remove('active');
     DOM.exerciseModal.classList.remove('active');
     DOM.breakdownModal.classList.remove('active');
+    DOM.nutrientInfoModal.classList.remove('active');
     DOM.historyModal.classList.remove('active');
     DOM.warningModal.classList.remove('active');
     AppState.currentFoodId = null;
@@ -1286,7 +1473,6 @@ function closeModals() {
  * Reset today's servings
  */
 async function resetDay() {
-    if (!confirm('Reset all servings and exercise for today?')) return;
     
     await db.resetTodayServings();
     AppState.servings = {};
@@ -1848,25 +2034,42 @@ function setupEventListeners() {
         if (e.target === DOM.breakdownModal) closeModals();
     });
     
+    // Nutrient info modal
+    DOM.closeNutrientInfoModal.addEventListener('click', closeModals);
+    DOM.nutrientInfoModal.addEventListener('click', (e) => {
+        if (e.target === DOM.nutrientInfoModal) closeModals();
+    });
+    
     // Warning modal
     DOM.closeWarningModal.addEventListener('click', closeModals);
     DOM.warningModal.addEventListener('click', (e) => {
         if (e.target === DOM.warningModal) closeModals();
     });
     
-    // Info buttons for macro breakdown
+    // Info buttons show educational content about nutrients
     document.querySelectorAll('.macro-info-btn, .calorie-info-btn').forEach(btn => {
         const nutrient = btn.dataset.nutrient;
         
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            showBreakdown(nutrient);
+            showNutrientInfo(nutrient);
         });
         
         // Touch handling for mobile
         btn.addEventListener('touchend', (e) => {
             e.preventDefault();
             e.stopPropagation();
+            showNutrientInfo(nutrient);
+        });
+    });
+    
+    // Macro bars and calorie ring show breakdown on tap
+    document.querySelectorAll('.macro-item, .calorie-ring').forEach(item => {
+        const nutrient = item.dataset.nutrient;
+        
+        item.addEventListener('click', (e) => {
+            // Don't trigger if clicking info button or exercise button
+            if (e.target.closest('.macro-info-btn') || e.target.closest('.calorie-info-btn') || e.target.closest('.exercise-btn')) return;
             showBreakdown(nutrient);
         });
     });
