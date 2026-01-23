@@ -1769,7 +1769,9 @@ function setupEventListeners() {
     DOM.resetDayBtn.addEventListener('mouseup', () => {
         clearTimeout(resetPressTimer);
         if (!resetIsLongPress) {
-            resetDay();
+            if (confirm('Reset all servings to zero?')) {
+                resetDay();
+            }
         }
     });
     
@@ -1789,7 +1791,9 @@ function setupEventListeners() {
         clearTimeout(resetPressTimer);
         if (!resetIsLongPress) {
             e.preventDefault();
-            resetDay();
+            if (confirm('Reset all servings to zero?')) {
+                resetDay();
+            }
         }
     });
     
