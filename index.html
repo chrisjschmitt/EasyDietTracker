@@ -23,7 +23,7 @@
                 <h1 class="logo">
                     <span class="logo-icon">🥗</span>
                     <span class="logo-text">EasyDiet</span>
-                    <span class="version-tag" id="versionTag">v1.2.5</span>
+                    <span class="version-tag" id="versionTag">v1.3.0</span>
                 </h1>
                 <button class="settings-btn" id="settingsBtn" aria-label="Settings">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -68,13 +68,13 @@
                             <div class="macro-fill protein" id="proteinBar"></div>
                         </div>
                     </div>
-                    <div class="macro-item clickable-stat" data-nutrient="carbs" role="button" tabindex="0">
+                    <div class="macro-item clickable-stat" data-nutrient="water" role="button" tabindex="0">
                         <div class="macro-header">
-                            <span class="macro-label">Carbs</span>
-                            <span class="macro-value" id="carbsValue">0g</span>
+                            <span class="macro-label">Water</span>
+                            <span class="macro-value" id="waterValue">0</span>
                         </div>
                         <div class="macro-bar">
-                            <div class="macro-fill carbs" id="carbsBar"></div>
+                            <div class="macro-fill water" id="waterBar"></div>
                         </div>
                     </div>
                     <div class="macro-item clickable-stat" data-nutrient="fat" role="button" tabindex="0">
@@ -209,6 +209,14 @@
                         <div class="input-group">
                             <input type="number" id="proteinTarget" value="50" min="0" max="500">
                             <span class="input-unit">g</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="waterTarget">Water</label>
+                        <div class="input-group">
+                            <input type="number" id="waterTarget" value="8" min="0" max="20">
+                            <span class="input-unit">cups</span>
                         </div>
                     </div>
 

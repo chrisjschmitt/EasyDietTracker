@@ -97,6 +97,7 @@ const AppState = {
         activityLevel: 'moderate',
         unitSystem: 'metric',
         proteinTarget: 50,
+        waterTarget: 8,
         carbsTarget: 250,
         fatTarget: 65,
         fibreTarget: 25,
@@ -105,6 +106,7 @@ const AppState = {
     },
     foods: [],
     servings: {},
+    waterCount: 0,
     exerciseCalories: 0,
     currentFoodId: null,
     isDefaultData: false
@@ -140,8 +142,8 @@ function cacheDOMElements() {
     DOM.calorieTarget = document.getElementById('calorieTarget');
     DOM.proteinValue = document.getElementById('proteinValue');
     DOM.proteinBar = document.getElementById('proteinBar');
-    DOM.carbsValue = document.getElementById('carbsValue');
-    DOM.carbsBar = document.getElementById('carbsBar');
+    DOM.waterValue = document.getElementById('waterValue');
+    DOM.waterBar = document.getElementById('waterBar');
     DOM.fatValue = document.getElementById('fatValue');
     DOM.fatBar = document.getElementById('fatBar');
     DOM.fibreValue = document.getElementById('fibreValue');
@@ -172,6 +174,7 @@ function cacheDOMElements() {
     
     // Settings inputs - Macro targets
     DOM.proteinTargetInput = document.getElementById('proteinTarget');
+    DOM.waterTargetInput = document.getElementById('waterTarget');
     DOM.carbsTargetInput = document.getElementById('carbsTarget');
     DOM.fatTargetInput = document.getElementById('fatTarget');
     DOM.fibreTargetInput = document.getElementById('fibreTarget');
@@ -346,6 +349,7 @@ async function loadSettings() {
     AppState.settings.activityLevel = settings.activityLevel || 'moderate';
     AppState.settings.unitSystem = settings.unitSystem || 'metric';
     AppState.settings.proteinTarget = settings.proteinTarget || 50;
+    AppState.settings.waterTarget = settings.waterTarget || 8;
     AppState.settings.carbsTarget = settings.carbsTarget || 250;
     AppState.settings.fatTarget = settings.fatTarget || 65;
     AppState.settings.fibreTarget = settings.fibreTarget || 25;
@@ -357,6 +361,7 @@ async function loadSettings() {
     DOM.baseCalories.value = AppState.settings.baseCalories;
     DOM.activityLevel.value = AppState.settings.activityLevel;
     DOM.proteinTargetInput.value = AppState.settings.proteinTarget;
+    DOM.waterTargetInput.value = AppState.settings.waterTarget;
     DOM.carbsTargetInput.value = AppState.settings.carbsTarget;
     DOM.fatTargetInput.value = AppState.settings.fatTarget;
     DOM.fibreTargetInput.value = AppState.settings.fibreTarget;
@@ -665,6 +670,7 @@ function parseCSVLine(line) {
 async function loadTodayServings() {
     AppState.servings = await db.getTodayServings();
     await loadExerciseCalories();
+    await loadWaterCount();
 }
 
 /**
@@ -853,7 +859,11 @@ function updateStats() {
     
     // Update macro values
     DOM.proteinValue.textContent = `${Math.round(totalProtein)}g`;
-    DOM.carbsValue.textContent = `${Math.round(totalCarbs)}g`;
+    DOM.waterValue.textContent = `${AppState.waterCount}`;
+    
+    // Update water bar
+    const { waterTarget } = AppState.settings;
+    DOM.waterBar.style.width = waterTarget > 0 ? `${Math.min((AppState.waterCount / waterTarget) * 100, 100)}%` : '0%';
     DOM.fatValue.textContent = `${Math.round(totalSatTransFat)}g`;
     DOM.fibreValue.textContent = `${Math.round(totalFibre)}g`;
     DOM.sugarValue.textContent = `${Math.round(totalAddedSugar)}g`;
@@ -1272,6 +1282,7 @@ async function resetDay() {
     await db.resetTodayServings();
     AppState.servings = {};
     await saveExerciseCalories(0);
+    await saveWaterCount(0);
     renderFoodGroups();
     updateStats();
 }
@@ -1304,6 +1315,39 @@ async function saveExerciseCalories(calories) {
     });
     updateExerciseDisplay();
     updateStats();
+}
+
+/**
+ * Load today's water count
+ */
+async function loadWaterCount() {
+    const waterData = await db.getSetting('waterData', null);
+    const today = db.getTodayKey();
+    
+    if (waterData && waterData.date === today) {
+        AppState.waterCount = waterData.count || 0;
+    } else {
+        AppState.waterCount = 0;
+    }
+}
+
+/**
+ * Save water count for today
+ */
+async function saveWaterCount(count) {
+    AppState.waterCount = count;
+    await db.saveSetting('waterData', {
+        date: db.getTodayKey(),
+        count: count
+    });
+    updateStats();
+}
+
+/**
+ * Increment water count
+ */
+async function incrementWater() {
+    await saveWaterCount(AppState.waterCount + 1);
 }
 
 /**
@@ -1619,6 +1663,12 @@ function setupEventListeners() {
         updateStats();
     });
     
+    DOM.waterTargetInput.addEventListener('change', async (e) => {
+        AppState.settings.waterTarget = parseInt(e.target.value) || 8;
+        await saveSettings();
+        updateStats();
+    });
+    
     DOM.carbsTargetInput.addEventListener('change', async (e) => {
         AppState.settings.carbsTarget = parseInt(e.target.value) || 250;
         await saveSettings();
@@ -1804,6 +1854,13 @@ function setupEventListeners() {
         stat.addEventListener('click', (e) => {
             // Don't trigger if clicking the exercise button
             if (e.target.closest('.exercise-btn')) return;
+            
+            // Water tracker - increment water count
+            if (nutrient === 'water') {
+                incrementWater();
+                return;
+            }
+            
             showBreakdown(nutrient);
         });
         
@@ -1831,6 +1888,13 @@ function setupEventListeners() {
             if (hasMoved) return;
             if (e.target.closest('.exercise-btn')) return;
             e.preventDefault();
+            
+            // Water tracker - increment water count
+            if (nutrient === 'water') {
+                incrementWater();
+                return;
+            }
+            
             showBreakdown(nutrient);
         });
     });

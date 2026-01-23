@@ -20,6 +20,7 @@
     --accent-tertiary: #c471ed;
     
     --protein-color: #f093fb;
+    --water-color: #00b4d8;
     --carbs-color: #f5af19;
     --fat-color: #12c2e9;
     --fibre-color: #7dd56f;
@@ -378,6 +379,7 @@ h1, h2, h3, h4 {
 }
 
 .macro-fill.protein { background: var(--protein-color); }
+.macro-fill.water { background: var(--water-color); }
 .macro-fill.carbs { background: var(--carbs-color); }
 .macro-fill.fat { background: var(--fat-color); }
 .macro-fill.fibre { background: var(--fibre-color); }
