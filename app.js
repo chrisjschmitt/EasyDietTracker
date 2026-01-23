@@ -1190,11 +1190,14 @@ function showBreakdown(nutrient) {
         if (servings > 0) {
             const value = config.getValue(food) * servings;
             total += value;
-            contributions.push({
-                food,
-                servings,
-                value
-            });
+            // Only show foods that actually contribute to this nutrient
+            if (value > 0) {
+                contributions.push({
+                    food,
+                    servings,
+                    value
+                });
+            }
         }
     });
     
