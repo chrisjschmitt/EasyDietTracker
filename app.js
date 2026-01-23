@@ -231,6 +231,14 @@ function cacheDOMElements() {
     DOM.infoSugar = document.getElementById('infoSugar');
     DOM.infoUltraProcessed = document.getElementById('infoUltraProcessed');
     
+    // Warning modal elements
+    DOM.warningModal = document.getElementById('warningModal');
+    DOM.closeWarningModal = document.getElementById('closeWarningModal');
+    DOM.warningIcon = document.getElementById('warningIcon');
+    DOM.warningTitle = document.getElementById('warningTitle');
+    DOM.warningDescription = document.getElementById('warningDescription');
+    DOM.warningTips = document.getElementById('warningTips');
+    
     // Serving modal elements
     DOM.servingIcon = document.getElementById('servingIcon');
     DOM.servingCategoryName = document.getElementById('servingCategoryName');
@@ -723,12 +731,38 @@ function renderFoodGroups() {
             const servings = AppState.servings[food.id] || 0;
             const goalReached = servings >= food.servingsHigh && food.servingsHigh > 0;
             
+            // Check if food has warnings
+            const isUltraProcessed = food.ultraProcessed === true;
+            const satFat = (food.saturatedFat || 0) + (food.transFat || 0);
+            const isHighSatFat = satFat >= 3;
+            const hasWarning = isUltraProcessed || isHighSatFat;
+            
+            // Determine warning type and icon
+            let warningType = '';
+            let warningIcon = '';
+            if (isUltraProcessed && isHighSatFat) {
+                warningType = 'both';
+                warningIcon = '⚠️';
+            } else if (isUltraProcessed) {
+                warningType = 'ultra-processed';
+                warningIcon = '🏭';
+            } else if (isHighSatFat) {
+                warningType = 'high-sat-fat';
+                warningIcon = '⚠️';
+            }
+            
             const itemEl = document.createElement('div');
             itemEl.className = `food-item${servings > 0 ? ' has-servings' : ''}${goalReached ? ' goal-reached' : ''}`;
             itemEl.dataset.foodId = food.id;
             
+            // Build warning button HTML if needed
+            const warningBtn = hasWarning 
+                ? `<button class="warning-btn" data-warning-type="${warningType}" data-sat-fat="${satFat}" data-food-id="${food.id}">${warningIcon}</button>`
+                : '';
+            
             itemEl.innerHTML = `
                 <button class="info-btn" data-food-id="${food.id}">ℹ</button>
+                ${warningBtn}
                 <span class="food-icon">${getFoodIcon(food.foodCategory)}</span>
                 <span class="food-name">${food.foodCategory}</span>
                 <span class="serving-count${servings === 0 ? ' zero' : ''}">${formatNumber(servings, 1)}</span>
@@ -865,6 +899,33 @@ function attachFoodItemListeners() {
         }, { passive: false });
     });
     
+    // Warning buttons - handle both click and touch (same pattern as info buttons)
+    document.querySelectorAll('.warning-btn').forEach(btn => {
+        const handleWarningTap = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const warningType = btn.dataset.warningType;
+            const satFat = btn.dataset.satFat;
+            showWarningExplanation(warningType, satFat);
+        };
+        
+        btn.addEventListener('click', handleWarningTap);
+        
+        // Add touch support for warning button
+        btn.addEventListener('touchend', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const warningType = btn.dataset.warningType;
+            const satFat = btn.dataset.satFat;
+            showWarningExplanation(warningType, satFat);
+        });
+        
+        // Prevent touchstart from bubbling to parent
+        btn.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+        }, { passive: false });
+    });
+    
     // Food items (tap/click and long press)
     // With scroll detection to prevent accidental taps
     const MOVE_THRESHOLD = 10; // pixels - if finger moves more than this, it's a scroll
@@ -925,8 +986,9 @@ function attachFoodItemListeners() {
             // Only register tap if:
             // 1. Not a long press
             // 2. Finger didn't move (not scrolling)
-            // 3. Not clicking the info button
-            if (!isLongPress && !hasMoved && !e.target.classList.contains('info-btn')) {
+            // 3. Not clicking the info or warning button
+            const isButtonClick = e.target.classList.contains('info-btn') || e.target.classList.contains('warning-btn');
+            if (!isLongPress && !hasMoved && !isButtonClick) {
                 incrementServing(parseInt(item.dataset.foodId));
             }
         };
@@ -1003,6 +1065,62 @@ function showFoodInfo(foodId) {
     DOM.infoUltraProcessed.hidden = !food.ultraProcessed;
     
     DOM.foodInfoModal.classList.add('active');
+}
+
+/**
+ * Show warning explanation modal
+ */
+function showWarningExplanation(warningType, satFatAmount) {
+    const warnings = {
+        'ultra-processed': {
+            icon: '🏭',
+            title: 'Ultra-Processed Food',
+            description: 'Ultra-processed foods are industrially manufactured products that contain ingredients not typically used in home cooking, such as additives, preservatives, and artificial flavors.',
+            tips: [
+                'Linked to increased risk of obesity and chronic diseases',
+                'Often high in added sugars, unhealthy fats, and sodium',
+                'Low in fiber, vitamins, and essential nutrients',
+                'Try to limit to 3 or fewer servings per day'
+            ]
+        },
+        'high-sat-fat': {
+            icon: '⚠️',
+            title: 'High in Saturated Fat',
+            description: `This food contains ${satFatAmount}g of saturated/trans fat per serving. High intake of saturated fat can raise LDL cholesterol and increase heart disease risk.`,
+            tips: [
+                'Limit saturated fat to less than 10% of daily calories',
+                'Choose lean proteins and low-fat dairy options',
+                'Replace with unsaturated fats when possible',
+                'Balance with fiber-rich foods'
+            ]
+        },
+        'both': {
+            icon: '⚠️',
+            title: 'Ultra-Processed & High Sat Fat',
+            description: `This food is ultra-processed and contains ${satFatAmount}g of saturated/trans fat per serving. Consider limiting consumption.`,
+            tips: [
+                'Ultra-processed foods linked to health risks',
+                'High saturated fat raises cholesterol',
+                'Choose whole food alternatives when possible',
+                'Enjoy occasionally as part of balanced diet'
+            ]
+        }
+    };
+    
+    const warning = warnings[warningType];
+    if (!warning) return;
+    
+    DOM.warningIcon.textContent = warning.icon;
+    DOM.warningTitle.textContent = warning.title;
+    DOM.warningDescription.textContent = warning.description;
+    DOM.warningTips.innerHTML = `
+        <h4>Health Tips</h4>
+        <ul>
+            ${warning.tips.map(tip => `<li>${tip}</li>`).join('')}
+        </ul>
+    `;
+    
+    DOM.warningModal.classList.add('active');
 }
 
 /**
@@ -1132,6 +1250,7 @@ function closeModals() {
     DOM.exerciseModal.classList.remove('active');
     DOM.breakdownModal.classList.remove('active');
     DOM.historyModal.classList.remove('active');
+    DOM.warningModal.classList.remove('active');
     AppState.currentFoodId = null;
 }
 
@@ -1651,6 +1770,12 @@ function setupEventListeners() {
     DOM.closeBreakdownModal.addEventListener('click', closeModals);
     DOM.breakdownModal.addEventListener('click', (e) => {
         if (e.target === DOM.breakdownModal) closeModals();
+    });
+    
+    // Warning modal
+    DOM.closeWarningModal.addEventListener('click', closeModals);
+    DOM.warningModal.addEventListener('click', (e) => {
+        if (e.target === DOM.warningModal) closeModals();
     });
     
     // Clickable stats for breakdown (with scroll detection)
