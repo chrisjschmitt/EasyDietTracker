@@ -889,7 +889,6 @@ function updateStats() {
     const { proteinTarget, carbsTarget, fatTarget, fibreTarget, sugarTarget, ultraProcessedTarget } = AppState.settings;
     
     DOM.proteinBar.style.width = proteinTarget > 0 ? `${Math.min((totalProtein / proteinTarget) * 100, 100)}%` : '0%';
-    DOM.carbsBar.style.width = carbsTarget > 0 ? `${Math.min((totalCarbs / carbsTarget) * 100, 100)}%` : '0%';
     DOM.fatBar.style.width = fatTarget > 0 ? `${Math.min((totalSatTransFat / fatTarget) * 100, 100)}%` : '0%';
     DOM.fibreBar.style.width = fibreTarget > 0 ? `${Math.min((totalFibre / fibreTarget) * 100, 100)}%` : '0%';
     DOM.sugarBar.style.width = sugarTarget > 0 ? `${Math.min((totalAddedSugar / sugarTarget) * 100, 100)}%` : '0%';
