@@ -1200,6 +1200,12 @@ function showBreakdown(nutrient) {
             title: 'Ultra-processed',
             unit: ' servings',
             getValue: (food) => food.ultraProcessed ? 1 : 0
+        },
+        water: {
+            icon: '💧',
+            title: 'Water',
+            unit: ' cups',
+            getValue: (food) => food.waterContribution || 0
         }
     };
     
