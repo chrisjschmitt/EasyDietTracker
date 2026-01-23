@@ -735,7 +735,7 @@ function renderFoodGroups() {
             // Check if food has warnings
             const isUltraProcessed = food.ultraProcessed === true;
             const satFat = (food.saturatedFat || 0) + (food.transFat || 0);
-            const isHighSatFat = satFat >= 3;
+            const isHighSatFat = satFat >= 5;
             const hasWarning = isUltraProcessed || isHighSatFat;
             
             // Determine warning type and icon
@@ -1068,7 +1068,7 @@ function showFoodInfo(foodId) {
     
     // Show warnings
     DOM.infoUltraProcessed.hidden = !food.ultraProcessed;
-    DOM.infoHighSatFat.hidden = satTransFat < 3;
+    DOM.infoHighSatFat.hidden = satTransFat < 5;
     
     DOM.foodInfoModal.classList.add('active');
 }
