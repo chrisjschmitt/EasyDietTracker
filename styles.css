@@ -160,6 +160,18 @@ h1, h2, h3, h4 {
     background-clip: text;
 }
 
+.version-tag {
+    font-size: 0.55rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    opacity: 0.5;
+    margin-left: 6px;
+    vertical-align: top;
+    letter-spacing: 0.02em;
+    -webkit-text-fill-color: var(--text-muted);
+    background: none;
+}
+
 .settings-btn {
     background: var(--bg-tertiary);
     border: none;
