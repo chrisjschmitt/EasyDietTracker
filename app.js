@@ -627,7 +627,7 @@ function parseCSVText(csvText) {
             totalFat: parseFloat(row[cols.totalFat]) || 0,
             saturatedFat: parseFloat(row[cols.saturatedFat]) || 0,
             transFat: parseFloat(row[cols.transFat]) || 0,
-            ultraProcessed: cols.ultraProcessed !== -1 ? (row[cols.ultraProcessed]?.toLowerCase() === 'true') : false
+            ultraProcessed: cols.ultraProcessed !== -1 ? (row[cols.ultraProcessed]?.toString().trim().toLowerCase() === 'true') : false
         });
     }
     
