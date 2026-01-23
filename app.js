@@ -447,7 +447,8 @@ function parseSpreadsheet(file) {
                     totalFat: findColumn(headers, ['total fat', 'totalfat', 'fat', 'fats']),
                     saturatedFat: findColumn(headers, ['saturated fat', 'saturatedfat', 'sat fat']),
                     transFat: findColumn(headers, ['trans fat', 'transfat']),
-                    ultraProcessed: findColumn(headers, ['ultra-processed', 'ultraprocessed', 'ultra processed'])
+                    ultraProcessed: findColumn(headers, ['ultra-processed', 'ultraprocessed', 'ultra processed']),
+                    water: findColumn(headers, ['water', 'water contribution'])
                 };
                 
                 // Parse rows
@@ -471,7 +472,8 @@ function parseSpreadsheet(file) {
                         totalFat: parseFloat(row[cols.totalFat]) || 0,
                         saturatedFat: parseFloat(row[cols.saturatedFat]) || 0,
                         transFat: parseFloat(row[cols.transFat]) || 0,
-                        ultraProcessed: cols.ultraProcessed !== -1 ? (row[cols.ultraProcessed]?.toString().toLowerCase() === 'true') : false
+                        ultraProcessed: cols.ultraProcessed !== -1 ? (row[cols.ultraProcessed]?.toString().toLowerCase() === 'true') : false,
+                        water: parseFloat(row[cols.water]) || 0
                     });
                 }
                 
@@ -601,7 +603,8 @@ function parseCSVText(csvText) {
         totalFat: findColumn(headers, ['total fat', 'totalfat', 'fat', 'fats']),
         saturatedFat: findColumn(headers, ['saturated fat', 'saturatedfat', 'sat fat']),
         transFat: findColumn(headers, ['trans fat', 'transfat']),
-        ultraProcessed: findColumn(headers, ['ultra-processed', 'ultraprocessed', 'ultra processed'])
+        ultraProcessed: findColumn(headers, ['ultra-processed', 'ultraprocessed', 'ultra processed']),
+        water: findColumn(headers, ['water', 'water contribution'])
     };
     
     const foods = [];
@@ -632,7 +635,8 @@ function parseCSVText(csvText) {
             totalFat: parseFloat(row[cols.totalFat]) || 0,
             saturatedFat: parseFloat(row[cols.saturatedFat]) || 0,
             transFat: parseFloat(row[cols.transFat]) || 0,
-            ultraProcessed: cols.ultraProcessed !== -1 ? (row[cols.ultraProcessed]?.toString().trim().toLowerCase() === 'true') : false
+            ultraProcessed: cols.ultraProcessed !== -1 ? (row[cols.ultraProcessed]?.toString().trim().toLowerCase() === 'true') : false,
+            water: parseFloat(row[cols.water]) || 0
         });
     }
 
@@ -821,6 +825,7 @@ function updateStats() {
     let totalFibre = 0;
     let totalAddedSugar = 0;
     let totalUltraProcessed = 0;
+    let totalWaterFromFood = 0;
     
     AppState.foods.forEach(food => {
         const servings = AppState.servings[food.id] || 0;
@@ -830,11 +835,15 @@ function updateStats() {
         totalSatTransFat += ((food.saturatedFat || 0) + (food.transFat || 0)) * servings;
         totalFibre += food.fibre * servings;
         totalAddedSugar += (food.addedSugar || 0) * servings;
+        totalWaterFromFood += (food.water || 0) * servings;
         
         if (food.ultraProcessed) {
             totalUltraProcessed += servings;
         }
     });
+    
+    // Total water = manually added + water from food
+    const totalWater = AppState.waterCount + totalWaterFromFood;
     
     const target = calculateTotalTarget();
     const progress = Math.min(totalCalories / target, 1);
@@ -859,11 +868,11 @@ function updateStats() {
     
     // Update macro values
     DOM.proteinValue.textContent = `${Math.round(totalProtein)}g`;
-    DOM.waterValue.textContent = `${AppState.waterCount}`;
+    DOM.waterValue.textContent = `${totalWater.toFixed(1)}`;
     
     // Update water bar
     const { waterTarget } = AppState.settings;
-    DOM.waterBar.style.width = waterTarget > 0 ? `${Math.min((AppState.waterCount / waterTarget) * 100, 100)}%` : '0%';
+    DOM.waterBar.style.width = waterTarget > 0 ? `${Math.min((totalWater / waterTarget) * 100, 100)}%` : '0%';
     DOM.fatValue.textContent = `${Math.round(totalSatTransFat)}g`;
     DOM.fibreValue.textContent = `${Math.round(totalFibre)}g`;
     DOM.sugarValue.textContent = `${Math.round(totalAddedSugar)}g`;
