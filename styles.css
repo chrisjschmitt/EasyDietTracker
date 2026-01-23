@@ -1324,6 +1324,10 @@ select:focus {
     font-size: 0.85rem;
 }
 
+.warning-badge[hidden] {
+    display: none;
+}
+
 .warning-badge .warning-icon {
     font-size: 1.1rem;
 }
