@@ -235,7 +235,8 @@ const TestRunner = {
         );
 
         // Check that displayed target updated
-        const displayedTarget = parseInt(DOM.calorieTarget.textContent);
+        const calorieTargetEl = document.getElementById('calorieTarget');
+        const displayedTarget = calorieTargetEl ? parseInt(calorieTargetEl.textContent) : 0;
         this.assert(
             displayedTarget === newTarget,
             'Displayed calorie target updates',
@@ -243,7 +244,8 @@ const TestRunner = {
         );
 
         // Check exercise display shows correct value
-        const exerciseDisplay = DOM.exerciseDisplay.textContent;
+        const exerciseValueEl = document.getElementById('exerciseValue');
+        const exerciseDisplay = exerciseValueEl ? exerciseValueEl.textContent : '';
         this.assert(
             exerciseDisplay.includes(`+${AppState.exerciseCalories}`),
             'Exercise display shows bonus amount',
