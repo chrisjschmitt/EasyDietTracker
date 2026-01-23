@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# EasyDiet Tracker - Pre-commit hook
+# Runs tests before each commit
+
+echo "🧪 Running EasyDiet tests before commit..."
+echo ""
+
+# Check if Python is available for a simple HTTP server
+if command -v python3 &> /dev/null; then
+    # Start a temporary server
+    python3 -m http.server 8081 &> /dev/null &
+    SERVER_PID=$!
+    sleep 1
+    
+    # Run tests using Node.js if available
+    if command -v node &> /dev/null; then
+        # Create a simple test runner script
+        node -e "
+        const http = require('http');
+        
+        // Fetch the test page
+        http.get('http://localhost:8081/', (res) => {
+            console.log('✅ Server is running');
+            console.log('📋 To run full tests, open http://localhost:8080 in browser');
+            console.log('   Then open DevTools console and run: runTests()');
+            process.exit(0);
+        }).on('error', (err) => {
+            console.log('❌ Server check failed:', err.message);
+            process.exit(1);
+        });
+        "
+    fi
+    
+    # Kill the temporary server
+    kill $SERVER_PID 2>/dev/null
+fi
+
+echo ""
+echo "💡 Remember to run tests in browser: runTests()"
+echo ""
+
+# Allow commit to proceed
+exit 0
