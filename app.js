@@ -1854,54 +1854,19 @@ function setupEventListeners() {
         if (e.target === DOM.warningModal) closeModals();
     });
     
-    // Clickable stats for breakdown (with scroll detection)
-    const STAT_MOVE_THRESHOLD = 10; // pixels - if finger moves more than this, it's a scroll
-    
-    document.querySelectorAll('.clickable-stat').forEach(stat => {
-        const nutrient = stat.dataset.nutrient;
-        let startX = 0;
-        let startY = 0;
-        let hasMoved = false;
+    // Info buttons for macro breakdown
+    document.querySelectorAll('.macro-info-btn, .calorie-info-btn').forEach(btn => {
+        const nutrient = btn.dataset.nutrient;
         
-        // Mouse click (desktop)
-        stat.addEventListener('click', (e) => {
-            // Don't trigger if clicking the exercise button
-            if (e.target.closest('.exercise-btn')) return;
-            
-            // Water is calculated from food, no manual increment
-            if (nutrient === 'water') return;
-            
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
             showBreakdown(nutrient);
         });
         
-        // Touch events with scroll detection
-        stat.addEventListener('touchstart', (e) => {
-            hasMoved = false;
-            if (e.touches && e.touches[0]) {
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
-            }
-        }, { passive: true });
-        
-        stat.addEventListener('touchmove', (e) => {
-            if (e.touches && e.touches[0]) {
-                const deltaX = Math.abs(e.touches[0].clientX - startX);
-                const deltaY = Math.abs(e.touches[0].clientY - startY);
-                if (deltaX > STAT_MOVE_THRESHOLD || deltaY > STAT_MOVE_THRESHOLD) {
-                    hasMoved = true;
-                }
-            }
-        }, { passive: true });
-        
-        stat.addEventListener('touchend', (e) => {
-            // Don't trigger if scrolling or clicking the exercise button
-            if (hasMoved) return;
-            if (e.target.closest('.exercise-btn')) return;
+        // Touch handling for mobile
+        btn.addEventListener('touchend', (e) => {
             e.preventDefault();
-            
-            // Water is calculated from food, no manual increment
-            if (nutrient === 'water') return;
-            
+            e.stopPropagation();
             showBreakdown(nutrient);
         });
     });

@@ -333,6 +333,35 @@ h1, h2, h3, h4 {
     color: var(--accent-secondary);
 }
 
+.calorie-info-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--bg-elevated);
+    border: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+    opacity: 0.7;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.calorie-info-btn:hover,
+.calorie-info-btn:active {
+    opacity: 1;
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    transform: scale(1.1);
+}
+
 /* Macro Bars */
 .macro-bars {
     flex: 1;
@@ -350,12 +379,42 @@ h1, h2, h3, h4 {
 .macro-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 0.8rem;
+    gap: 8px;
 }
 
 .macro-label {
     color: var(--text-secondary);
     font-weight: 500;
+    flex: 1;
+}
+
+.macro-info-btn {
+    background: var(--bg-elevated);
+    border: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+    opacity: 0.7;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+}
+
+.macro-info-btn:hover,
+.macro-info-btn:active {
+    opacity: 1;
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    transform: scale(1.1);
 }
 
 .macro-value {
