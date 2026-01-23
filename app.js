@@ -630,7 +630,7 @@ function parseCSVText(csvText) {
             ultraProcessed: cols.ultraProcessed !== -1 ? (row[cols.ultraProcessed]?.toString().trim().toLowerCase() === 'true') : false
         });
     }
-    
+
     return foods;
 }
 
@@ -1492,9 +1492,13 @@ async function exportHistory() {
  * Clear cache only - refreshes app code without losing data
  */
 async function clearCacheAndReload() {
-    if (!confirm('Clear browser cache and reload? Your data will be preserved.')) return;
+    if (!confirm('Clear cache and food data, then reload? This will re-download the default food database.')) return;
     
     try {
+        // Clear food data from IndexedDB to force fresh parse
+        await db.clearFoods();
+        await db.saveSetting('isDefaultData', null);
+        
         // Unregister service workers
         if ('serviceWorker' in navigator) {
             const registrations = await navigator.serviceWorker.getRegistrations();
