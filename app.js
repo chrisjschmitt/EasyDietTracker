@@ -2097,12 +2097,18 @@ function setupEventListeners() {
         DOM.servingInput.value = (current + 0.5).toFixed(1);
     });
     
-    DOM.saveServing.addEventListener('click', async () => {
+    const handleSaveServing = async () => {
         if (AppState.currentFoodId) {
             const value = parseFloat(DOM.servingInput.value) || 0;
             await setServing(AppState.currentFoodId, value);
         }
         closeModals();
+    };
+    
+    DOM.saveServing.addEventListener('click', handleSaveServing);
+    DOM.saveServing.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        handleSaveServing();
     });
     
     DOM.servingInput.addEventListener('keydown', async (e) => {
