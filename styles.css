@@ -1183,6 +1183,8 @@ select:focus {
 
 .food-info-body {
     padding: var(--spacing-lg);
+    max-height: 60vh;
+    overflow-y: auto;
 }
 
 .info-row {
@@ -1244,15 +1246,41 @@ select:focus {
     text-transform: uppercase;
 }
 
-.ultra-processed-badge {
+/* Food Info Warnings */
+.food-warnings {
     margin-top: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.warning-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
     padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+}
+
+.warning-badge .warning-icon {
+    font-size: 1.1rem;
+}
+
+.warning-badge .warning-text {
+    font-weight: 500;
+}
+
+.warning-badge.ultra-processed {
     background: rgba(155, 89, 182, 0.15);
     border: 1px solid var(--ultra-processed-color);
-    border-radius: var(--radius-md);
     color: var(--ultra-processed-color);
-    font-size: 0.85rem;
-    text-align: center;
+}
+
+.warning-badge.high-sat-fat {
+    background: rgba(231, 76, 60, 0.15);
+    border: 1px solid var(--danger);
+    color: var(--danger);
 }
 
 /* History Modal */

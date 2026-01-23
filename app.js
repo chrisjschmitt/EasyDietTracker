@@ -230,6 +230,7 @@ function cacheDOMElements() {
     DOM.infoFibre = document.getElementById('infoFibre');
     DOM.infoSugar = document.getElementById('infoSugar');
     DOM.infoUltraProcessed = document.getElementById('infoUltraProcessed');
+    DOM.infoHighSatFat = document.getElementById('infoHighSatFat');
     
     // Warning modal elements
     DOM.warningModal = document.getElementById('warningModal');
@@ -1059,10 +1060,14 @@ function showFoodInfo(foodId) {
     DOM.infoCalories.textContent = formatNumber(food.calories);
     DOM.infoProtein.textContent = `${formatNumber(food.protein)}g`;
     DOM.infoCarbs.textContent = `${formatNumber(food.carbs)}g`;
-    DOM.infoFat.textContent = `${formatNumber((food.saturatedFat || 0) + (food.transFat || 0))}g`;
+    const satTransFat = (food.saturatedFat || 0) + (food.transFat || 0);
+    DOM.infoFat.textContent = `${formatNumber(satTransFat)}g`;
     DOM.infoFibre.textContent = `${formatNumber(food.fibre)}g`;
     DOM.infoSugar.textContent = `${formatNumber(food.addedSugar || 0)}g`;
+    
+    // Show warnings
     DOM.infoUltraProcessed.hidden = !food.ultraProcessed;
+    DOM.infoHighSatFat.hidden = satTransFat < 3;
     
     DOM.foodInfoModal.classList.add('active');
 }
