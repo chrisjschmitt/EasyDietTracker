@@ -824,6 +824,7 @@ function updateStats() {
         totalSatTransFat += ((food.saturatedFat || 0) + (food.transFat || 0)) * servings;
         totalFibre += food.fibre * servings;
         totalAddedSugar += (food.addedSugar || 0) * servings;
+        
         if (food.ultraProcessed) {
             totalUltraProcessed += servings;
         }
