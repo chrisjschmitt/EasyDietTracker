@@ -1205,7 +1205,7 @@ function showBreakdown(nutrient) {
             icon: '💧',
             title: 'Water',
             unit: ' cups',
-            getValue: (food) => food.waterContribution || 0
+            getValue: (food) => food.water || 0
         }
     };
     
