@@ -1238,9 +1238,11 @@ function showBreakdown(nutrient) {
     contributions.sort((a, b) => b.value - a.value);
     
     // Update modal header
+    // Water uses 1 decimal place for total, others use 0
+    const totalDecimals = nutrient === 'water' ? 1 : 0;
     DOM.breakdownIcon.textContent = config.icon;
     DOM.breakdownTitle.textContent = config.title;
-    DOM.breakdownTotal.textContent = `${formatNumber(total)}${config.unit}`;
+    DOM.breakdownTotal.textContent = `${formatNumber(total, totalDecimals)}${config.unit}`;
     
     // Generate list HTML
     if (contributions.length === 0) {
@@ -1250,6 +1252,8 @@ function showBreakdown(nutrient) {
         DOM.breakdownList.style.display = 'block';
         DOM.breakdownEmpty.style.display = 'none';
         
+        // Water uses 1 decimal place, others use 0
+        const valueDecimals = nutrient === 'water' ? 1 : 0;
         DOM.breakdownList.innerHTML = contributions.map(({ food, servings, value }) => `
             <div class="breakdown-item">
                 <span class="breakdown-item-icon">${getFoodIcon(food.foodCategory)}</span>
@@ -1257,7 +1261,7 @@ function showBreakdown(nutrient) {
                     <div class="breakdown-item-name">${food.foodCategory}</div>
                     <div class="breakdown-item-servings">${servings} serving${servings !== 1 ? 's' : ''}</div>
                 </div>
-                <span class="breakdown-item-value">${formatNumber(value)}${config.unit}</span>
+                <span class="breakdown-item-value">${formatNumber(value, valueDecimals)}${config.unit}</span>
             </div>
         `).join('');
     }
