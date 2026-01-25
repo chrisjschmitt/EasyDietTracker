@@ -1300,18 +1300,44 @@ function showBreakdown(nutrient) {
         // Water uses 1 decimal place, others use 0
         const valueDecimals = nutrient === 'water' ? 1 : 0;
         DOM.breakdownList.innerHTML = contributions.map(({ food, servings, value }) => `
-            <div class="breakdown-item">
+            <div class="breakdown-item" data-food-id="${food.id}" role="button" tabindex="0">
                 <span class="breakdown-item-icon">${getFoodIcon(food.foodCategory)}</span>
                 <div class="breakdown-item-info">
                     <div class="breakdown-item-name">${food.foodCategory}</div>
                     <div class="breakdown-item-servings">${servings} serving${servings !== 1 ? 's' : ''}</div>
                 </div>
                 <span class="breakdown-item-value">${formatNumber(value, valueDecimals)}${config.unit}</span>
+                <span class="breakdown-item-edit">✎</span>
             </div>
         `).join('');
+        
+        // Attach click handlers to breakdown items
+        attachBreakdownItemListeners();
     }
     
     DOM.breakdownModal.classList.add('active');
+}
+
+/**
+ * Attach click handlers to breakdown items for editing servings
+ */
+function attachBreakdownItemListeners() {
+    document.querySelectorAll('.breakdown-item[data-food-id]').forEach(item => {
+        const foodId = parseInt(item.dataset.foodId);
+        
+        // Click handler
+        item.addEventListener('click', () => {
+            closeModals();
+            showServingModal(foodId);
+        });
+        
+        // Touch handler for mobile
+        item.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            closeModals();
+            showServingModal(foodId);
+        });
+    });
 }
 
 /**

@@ -1571,10 +1571,34 @@ select:focus {
     background: var(--bg-tertiary);
     border-radius: var(--radius-md);
     margin-bottom: var(--spacing-sm);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.breakdown-item:hover,
+.breakdown-item:active {
+    background: var(--bg-elevated);
+    transform: translateX(4px);
 }
 
 .breakdown-item:last-child {
     margin-bottom: 0;
+}
+
+.breakdown-item-edit {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+    transition: var(--transition-fast);
+    margin-left: var(--spacing-sm);
+}
+
+.breakdown-item:hover .breakdown-item-edit,
+.breakdown-item:active .breakdown-item-edit {
+    opacity: 1;
+    color: var(--accent-primary);
 }
 
 .breakdown-item-icon {
