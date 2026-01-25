@@ -455,7 +455,8 @@ function parseSpreadsheet(file) {
                     saturatedFat: findColumn(headers, ['saturated fat', 'saturatedfat', 'sat fat']),
                     transFat: findColumn(headers, ['trans fat', 'transfat']),
                     ultraProcessed: findColumn(headers, ['ultra-processed', 'ultraprocessed', 'ultra processed']),
-                    water: findColumn(headers, ['water', 'water contribution'])
+                    hydration: findColumn(headers, ['hydration', 'water', 'water contribution']),
+                    salt: findColumn(headers, ['salt', 'sodium'])
                 };
                 
                 // Parse rows
@@ -480,7 +481,8 @@ function parseSpreadsheet(file) {
                         saturatedFat: parseFloat(row[cols.saturatedFat]) || 0,
                         transFat: parseFloat(row[cols.transFat]) || 0,
                         ultraProcessed: cols.ultraProcessed !== -1 ? (row[cols.ultraProcessed]?.toString().toLowerCase() === 'true') : false,
-                        water: parseFloat(row[cols.water]) || 0
+                        hydration: parseFloat(row[cols.hydration]) || 0,
+                        salt: parseFloat(row[cols.salt]) || 0
                     });
                 }
                 
@@ -611,7 +613,8 @@ function parseCSVText(csvText) {
         saturatedFat: findColumn(headers, ['saturated fat', 'saturatedfat', 'sat fat']),
         transFat: findColumn(headers, ['trans fat', 'transfat']),
         ultraProcessed: findColumn(headers, ['ultra-processed', 'ultraprocessed', 'ultra processed']),
-        water: findColumn(headers, ['water', 'water contribution'])
+        hydration: findColumn(headers, ['hydration', 'water', 'water contribution']),
+        salt: findColumn(headers, ['salt', 'sodium'])
     };
     
     const foods = [];
@@ -643,7 +646,8 @@ function parseCSVText(csvText) {
             saturatedFat: parseFloat(row[cols.saturatedFat]) || 0,
             transFat: parseFloat(row[cols.transFat]) || 0,
             ultraProcessed: cols.ultraProcessed !== -1 ? (row[cols.ultraProcessed]?.toString().trim().toLowerCase() === 'true') : false,
-            water: parseFloat(row[cols.water]) || 0
+            hydration: parseFloat(row[cols.hydration]) || 0,
+            salt: parseFloat(row[cols.salt]) || 0
         });
     }
 
@@ -842,7 +846,7 @@ function updateStats() {
         totalSatTransFat += ((food.saturatedFat || 0) + (food.transFat || 0)) * servings;
         totalFibre += food.fibre * servings;
         totalAddedSugar += (food.addedSugar || 0) * servings;
-        totalWaterFromFood += (food.water || 0) * servings;
+        totalWaterFromFood += (food.hydration || 0) * servings;
         
         if (food.ultraProcessed) {
             totalUltraProcessed += servings;
@@ -1205,7 +1209,7 @@ function showBreakdown(nutrient) {
             icon: '💧',
             title: 'Water',
             unit: ' cups',
-            getValue: (food) => food.water || 0
+            getValue: (food) => food.hydration || 0
         }
     };
     
