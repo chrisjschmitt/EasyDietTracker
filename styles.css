@@ -26,6 +26,7 @@
     --fibre-color: #7dd56f;
     --sugar-color: #ff6b6b;
     --ultra-processed-color: #9b59b6;
+    --salt-color: #e17055;
     
     --success: #7dd56f;
     --warning: #f5af19;
@@ -444,6 +445,29 @@ h1, h2, h3, h4 {
 .macro-fill.fibre { background: var(--fibre-color); }
 .macro-fill.sugar { background: var(--sugar-color); }
 .macro-fill.ultra-processed { background: var(--ultra-processed-color); }
+.macro-fill.salt { background: var(--salt-color); }
+
+/* Dual target bar (min/max) */
+.macro-bar.dual-target {
+    position: relative;
+}
+
+.target-marker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--text-muted);
+    opacity: 0.5;
+}
+
+.target-marker.min {
+    background: var(--success);
+}
+
+.target-marker.max {
+    background: var(--danger);
+}
 
 /* ============================================
    Food Groups

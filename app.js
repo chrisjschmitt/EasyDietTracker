@@ -102,7 +102,9 @@ const AppState = {
         fatTarget: 65,
         fibreTarget: 25,
         sugarTarget: 50,
-        ultraProcessedTarget: 3
+        ultraProcessedTarget: 3,
+        saltMinTarget: 500,
+        saltMaxTarget: 2300
     },
     foods: [],
     servings: {},
@@ -152,6 +154,10 @@ function cacheDOMElements() {
     DOM.sugarBar = document.getElementById('sugarBar');
     DOM.ultraProcessedValue = document.getElementById('ultraProcessedValue');
     DOM.ultraProcessedBar = document.getElementById('ultraProcessedBar');
+    DOM.saltValue = document.getElementById('saltValue');
+    DOM.saltBar = document.getElementById('saltBar');
+    DOM.saltMinMarker = document.getElementById('saltMinMarker');
+    DOM.saltMaxMarker = document.getElementById('saltMaxMarker');
     
     // Breakdown modal
     DOM.breakdownModal = document.getElementById('breakdownModal');
@@ -187,6 +193,8 @@ function cacheDOMElements() {
     DOM.fibreTargetInput = document.getElementById('fibreTarget');
     DOM.sugarTargetInput = document.getElementById('sugarTarget');
     DOM.ultraProcessedTargetInput = document.getElementById('ultraProcessedTarget');
+    DOM.saltMinTargetInput = document.getElementById('saltMinTarget');
+    DOM.saltMaxTargetInput = document.getElementById('saltMaxTarget');
     
     // Settings inputs
     DOM.baseCalories = document.getElementById('baseCalories');
@@ -362,6 +370,8 @@ async function loadSettings() {
     AppState.settings.fibreTarget = settings.fibreTarget || 25;
     AppState.settings.sugarTarget = settings.sugarTarget || 50;
     AppState.settings.ultraProcessedTarget = settings.ultraProcessedTarget || 3;
+    AppState.settings.saltMinTarget = settings.saltMinTarget || 500;
+    AppState.settings.saltMaxTarget = settings.saltMaxTarget || 2300;
     AppState.isDefaultData = settings.isDefaultData || false;
     
     // Update UI
@@ -374,6 +384,8 @@ async function loadSettings() {
     DOM.fibreTargetInput.value = AppState.settings.fibreTarget;
     DOM.sugarTargetInput.value = AppState.settings.sugarTarget;
     DOM.ultraProcessedTargetInput.value = AppState.settings.ultraProcessedTarget;
+    DOM.saltMinTargetInput.value = AppState.settings.saltMinTarget;
+    DOM.saltMaxTargetInput.value = AppState.settings.saltMaxTarget;
     updateActivityAllowance();
     updateUnitSystemUI();
 }
@@ -390,6 +402,8 @@ async function saveSettings() {
     await db.saveSetting('fatTarget', AppState.settings.fatTarget);
     await db.saveSetting('fibreTarget', AppState.settings.fibreTarget);
     await db.saveSetting('sugarTarget', AppState.settings.sugarTarget);
+    await db.saveSetting('saltMinTarget', AppState.settings.saltMinTarget);
+    await db.saveSetting('saltMaxTarget', AppState.settings.saltMaxTarget);
 }
 
 /**
@@ -837,6 +851,7 @@ function updateStats() {
     let totalAddedSugar = 0;
     let totalUltraProcessed = 0;
     let totalWaterFromFood = 0;
+    let totalSalt = 0;
     
     AppState.foods.forEach(food => {
         const servings = AppState.servings[food.id] || 0;
@@ -847,6 +862,7 @@ function updateStats() {
         totalFibre += food.fibre * servings;
         totalAddedSugar += (food.addedSugar || 0) * servings;
         totalWaterFromFood += (food.hydration || 0) * servings;
+        totalSalt += (food.salt || 0) * servings;
         
         if (food.ultraProcessed) {
             totalUltraProcessed += servings;
@@ -890,13 +906,32 @@ function updateStats() {
     DOM.ultraProcessedValue.textContent = `${totalUltraProcessed}`;
     
     // Update macro bars using configurable targets
-    const { proteinTarget, carbsTarget, fatTarget, fibreTarget, sugarTarget, ultraProcessedTarget } = AppState.settings;
+    const { proteinTarget, carbsTarget, fatTarget, fibreTarget, sugarTarget, ultraProcessedTarget, saltMinTarget, saltMaxTarget } = AppState.settings;
     
     DOM.proteinBar.style.width = proteinTarget > 0 ? `${Math.min((totalProtein / proteinTarget) * 100, 100)}%` : '0%';
     DOM.fatBar.style.width = fatTarget > 0 ? `${Math.min((totalSatTransFat / fatTarget) * 100, 100)}%` : '0%';
     DOM.fibreBar.style.width = fibreTarget > 0 ? `${Math.min((totalFibre / fibreTarget) * 100, 100)}%` : '0%';
     DOM.sugarBar.style.width = sugarTarget > 0 ? `${Math.min((totalAddedSugar / sugarTarget) * 100, 100)}%` : '0%';
     DOM.ultraProcessedBar.style.width = ultraProcessedTarget > 0 ? `${Math.min((totalUltraProcessed / ultraProcessedTarget) * 100, 100)}%` : '0%';
+    
+    // Update salt display and bar (uses max target for bar width)
+    DOM.saltValue.textContent = `${Math.round(totalSalt)}mg`;
+    DOM.saltBar.style.width = saltMaxTarget > 0 ? `${Math.min((totalSalt / saltMaxTarget) * 100, 100)}%` : '0%';
+    
+    // Position salt target markers
+    if (saltMaxTarget > 0) {
+        DOM.saltMinMarker.style.left = `${(saltMinTarget / saltMaxTarget) * 100}%`;
+        DOM.saltMaxMarker.style.left = '100%';
+    }
+    
+    // Color salt bar based on range
+    if (totalSalt > saltMaxTarget) {
+        DOM.saltBar.style.background = 'var(--danger)';
+    } else if (totalSalt < saltMinTarget) {
+        DOM.saltBar.style.background = 'var(--warning)';
+    } else {
+        DOM.saltBar.style.background = 'var(--salt-color)';
+    }
 }
 
 // ============================================
@@ -1210,6 +1245,12 @@ function showBreakdown(nutrient) {
             title: 'Water',
             unit: ' cups',
             getValue: (food) => food.hydration || 0
+        },
+        salt: {
+            icon: '🧂',
+            title: 'Salt',
+            unit: 'mg',
+            getValue: (food) => food.salt || 0
         }
     };
     
@@ -1437,6 +1478,36 @@ function showNutrientInfo(nutrient) {
                 
                 <div class="nutrient-target-info">
                     <strong>Your limit:</strong> ${AppState.settings.ultraProcessedTarget} servings maximum/day
+                </div>
+            `
+        },
+        salt: {
+            icon: '🧂',
+            title: 'Salt/Sodium',
+            content: `
+                <h4>Why track salt?</h4>
+                <p>Salt (sodium) is essential for nerve and muscle function, but most people consume too much. Tracking helps you stay in the healthy range.</p>
+                
+                <h4>Health concerns from excess salt:</h4>
+                <ul>
+                    <li>Raises blood pressure</li>
+                    <li>Increases risk of heart disease and stroke</li>
+                    <li>Can cause water retention</li>
+                    <li>May affect kidney function</li>
+                </ul>
+                
+                <h4>Too little salt can cause:</h4>
+                <ul>
+                    <li>Muscle cramps</li>
+                    <li>Fatigue and weakness</li>
+                    <li>Headaches</li>
+                </ul>
+                
+                <h4>High-salt foods:</h4>
+                <p>Processed foods, cheese, bread, condiments, and restaurant meals.</p>
+                
+                <div class="nutrient-target-info">
+                    <strong>Your range:</strong> ${AppState.settings.saltMinTarget}mg minimum – ${AppState.settings.saltMaxTarget}mg maximum/day
                 </div>
             `
         }
@@ -1905,6 +1976,18 @@ function setupEventListeners() {
     
     DOM.ultraProcessedTargetInput.addEventListener('change', async (e) => {
         AppState.settings.ultraProcessedTarget = parseInt(e.target.value) || 3;
+        await saveSettings();
+        updateStats();
+    });
+    
+    DOM.saltMinTargetInput.addEventListener('change', async (e) => {
+        AppState.settings.saltMinTarget = parseInt(e.target.value) || 500;
+        await saveSettings();
+        updateStats();
+    });
+    
+    DOM.saltMaxTargetInput.addEventListener('change', async (e) => {
+        AppState.settings.saltMaxTarget = parseInt(e.target.value) || 2300;
         await saveSettings();
         updateStats();
     });

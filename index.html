@@ -23,7 +23,7 @@
                 <h1 class="logo">
                     <span class="logo-icon">🥗</span>
                     <span class="logo-text">EasyDiet</span>
-                    <span class="version-tag" id="versionTag">v1.8.0</span>
+                    <span class="version-tag" id="versionTag">v1.9.0</span>
                 </h1>
                 <button class="settings-btn" id="settingsBtn" aria-label="Settings">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -118,6 +118,18 @@
                         </div>
                         <div class="macro-bar">
                             <div class="macro-fill ultra-processed" id="ultraProcessedBar"></div>
+                        </div>
+                    </div>
+                    <div class="macro-item" data-nutrient="salt">
+                        <div class="macro-header">
+                            <span class="macro-label">Salt</span>
+                            <span class="macro-value" id="saltValue">0mg</span>
+                            <button class="macro-info-btn" data-nutrient="salt" title="View breakdown">ℹ</button>
+                        </div>
+                        <div class="macro-bar dual-target">
+                            <div class="macro-fill salt" id="saltBar"></div>
+                            <div class="target-marker min" id="saltMinMarker"></div>
+                            <div class="target-marker max" id="saltMaxMarker"></div>
                         </div>
                     </div>
                 </div>
@@ -264,6 +276,22 @@
                         <div class="input-group">
                             <input type="number" id="ultraProcessedTarget" value="3" min="0" max="20">
                             <span class="input-unit">servings</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="saltMinTarget">Salt/Sodium (min)</label>
+                        <div class="input-group">
+                            <input type="number" id="saltMinTarget" value="500" min="0" max="5000" step="100">
+                            <span class="input-unit">mg</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="saltMaxTarget">Salt/Sodium (max)</label>
+                        <div class="input-group">
+                            <input type="number" id="saltMaxTarget" value="2300" min="0" max="5000" step="100">
+                            <span class="input-unit">mg</span>
                         </div>
                     </div>
                 </div>
