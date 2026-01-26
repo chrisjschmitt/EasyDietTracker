@@ -2369,16 +2369,10 @@ function closeAddFoodModal() {
  * Add searched food to the daily log
  */
 async function addSearchedFoodToLog() {
-    console.log('addSearchedFoodToLog called');
-    
     const food = AppState.currentSearchFood;
-    if (!food) {
-        console.error('No current search food');
-        return;
-    }
+    if (!food) return;
     
     const servings = parseFloat(DOM.addServingInput.value) || 1;
-    console.log('Adding', servings, 'servings of', food.name);
     
     // Create a food ID for this searched food
     const searchFoodId = `search-${food.id}`;
@@ -2426,21 +2420,14 @@ async function addSearchedFoodToLog() {
     // Add to recent foods
     await addToRecentFoods(food);
     
-    // Close modals first (better UX)
-    console.log('Closing modals...');
+    // Close modals
     DOM.addFoodModal.classList.remove('active');
     DOM.searchModal.classList.remove('active');
     AppState.currentSearchFood = null;
     
     // Re-render and update stats
-    try {
-        console.log('Re-rendering...');
-        renderFoodGroups();
-        updateStats();
-        console.log('Done!');
-    } catch (error) {
-        console.error('Error updating display:', error);
-    }
+    renderFoodGroups();
+    updateStats();
 }
 
 // ============================================
