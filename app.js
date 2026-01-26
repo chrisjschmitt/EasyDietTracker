@@ -398,6 +398,7 @@ async function saveSettings() {
     await db.saveSetting('activityLevel', AppState.settings.activityLevel);
     await db.saveSetting('unitSystem', AppState.settings.unitSystem);
     await db.saveSetting('proteinTarget', AppState.settings.proteinTarget);
+    await db.saveSetting('waterTarget', AppState.settings.waterTarget);
     await db.saveSetting('carbsTarget', AppState.settings.carbsTarget);
     await db.saveSetting('fatTarget', AppState.settings.fatTarget);
     await db.saveSetting('fibreTarget', AppState.settings.fibreTarget);
