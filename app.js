@@ -1099,7 +1099,8 @@ function attachFoodItemListeners() {
         const handleInfoTap = (e) => {
             e.stopPropagation();
             e.preventDefault();
-            showFoodInfo(parseInt(btn.dataset.foodId));
+            const fid = btn.dataset.foodId;
+            showFoodInfo(isNaN(parseInt(fid)) ? fid : parseInt(fid));
         };
         
         btn.addEventListener('click', handleInfoTap);
@@ -1108,7 +1109,8 @@ function attachFoodItemListeners() {
         btn.addEventListener('touchend', (e) => {
             e.stopPropagation();
             e.preventDefault();
-            showFoodInfo(parseInt(btn.dataset.foodId));
+            const fid = btn.dataset.foodId;
+            showFoodInfo(isNaN(parseInt(fid)) ? fid : parseInt(fid));
         });
         
         // Prevent touchstart from bubbling to parent
@@ -1144,6 +1146,12 @@ function attachFoodItemListeners() {
         }, { passive: false });
     });
     
+    // Helper to parse food IDs (can be numeric or string for search foods)
+    const parseFoodId = (idStr) => {
+        const numericId = parseInt(idStr);
+        return isNaN(numericId) ? idStr : numericId;
+    };
+    
     // Food items (tap/click and long press)
     // With scroll detection to prevent accidental taps
     const MOVE_THRESHOLD = 10; // pixels - if finger moves more than this, it's a scroll
@@ -1171,7 +1179,8 @@ function attachFoodItemListeners() {
             pressTimer = setTimeout(() => {
                 if (!hasMoved) {
                     isLongPress = true;
-                    showServingModal(parseInt(item.dataset.foodId));
+                    const sid = item.dataset.foodId;
+                    showServingModal(isNaN(parseInt(sid)) ? sid : parseInt(sid));
                 }
             }, 500);
         };
@@ -1207,7 +1216,11 @@ function attachFoodItemListeners() {
             // 3. Not clicking the info or warning button
             const isButtonClick = e.target.classList.contains('info-btn') || e.target.classList.contains('warning-btn');
             if (!isLongPress && !hasMoved && !isButtonClick) {
-                incrementServing(parseInt(item.dataset.foodId));
+                // Food IDs can be numbers or strings (for search foods)
+                const foodId = item.dataset.foodId;
+                const numericId = parseInt(foodId);
+                // Use numeric ID if it's a valid number, otherwise use string ID
+                incrementServing(isNaN(numericId) ? foodId : numericId);
             }
         };
         
@@ -1239,6 +1252,19 @@ function attachFoodItemListeners() {
  * Increment serving by 1
  */
 async function incrementServing(foodId) {
+    console.log('incrementServing called with foodId:', foodId, 'type:', typeof foodId);
+    
+    if (foodId === null || foodId === undefined || (typeof foodId === 'number' && isNaN(foodId))) {
+        console.error('Invalid foodId:', foodId);
+        return;
+    }
+    
+    const food = AppState.foods.find(f => f.id === foodId);
+    if (!food) {
+        console.error('Food not found for id:', foodId, 'Available IDs:', AppState.foods.map(f => f.id).slice(0, 10));
+        return;
+    }
+    
     const current = AppState.servings[foodId] || 0;
     const newValue = current + 1;
     
@@ -1247,6 +1273,7 @@ async function incrementServing(foodId) {
     
     updateFoodItem(foodId);
     updateStats();
+    console.log('Serving incremented for', food.foodCategory, 'to', newValue);
 }
 
 /**
@@ -1475,7 +1502,8 @@ function showBreakdown(nutrient) {
  */
 function attachBreakdownItemListeners() {
     document.querySelectorAll('.breakdown-item[data-food-id]').forEach(item => {
-        const foodId = parseInt(item.dataset.foodId);
+        const rawId = item.dataset.foodId;
+        const foodId = isNaN(parseInt(rawId)) ? rawId : parseInt(rawId);
         
         // Click handler
         item.addEventListener('click', () => {
