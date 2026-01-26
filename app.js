@@ -601,6 +601,15 @@ async function loadFoods() {
         await loadDefaultFoodData();
     }
     
+    // Load any previously added search foods
+    const searchFoods = await db.getSetting('searchFoods') || [];
+    searchFoods.forEach(food => {
+        // Only add if not already in the list
+        if (!AppState.foods.find(f => f.id === food.id)) {
+            AppState.foods.push(food);
+        }
+    });
+    
     await loadTodayServings();
     renderFoodGroups();
     updateStats();
@@ -2365,16 +2374,16 @@ async function addSearchedFoodToLog() {
     
     const servings = parseFloat(DOM.addServingInput.value) || 1;
     
-    // Create a unique ID for this logged food entry
-    const loggedFoodId = `search-${food.id}-${Date.now()}`;
+    // Create a food ID for this searched food
+    const searchFoodId = `search-${food.id}`;
     
     // Add to the main foods list if not already there
-    let existingFood = AppState.foods.find(f => f.id === `search-${food.id}`);
+    let existingFood = AppState.foods.find(f => f.id === searchFoodId);
     
     if (!existingFood) {
         // Create a food entry compatible with the app's food structure
         existingFood = {
-            id: `search-${food.id}`,
+            id: searchFoodId,
             foodGroup: food.category,
             foodCategory: food.name,
             servingsLow: 0,
@@ -2396,7 +2405,11 @@ async function addSearchedFoodToLog() {
         };
         
         AppState.foods.push(existingFood);
-        await db.saveFood(existingFood);
+        
+        // Save the search food to a separate list in settings for persistence
+        const searchFoods = await db.getSetting('searchFoods') || [];
+        searchFoods.push(existingFood);
+        await db.saveSetting('searchFoods', searchFoods);
     }
     
     // Update servings
