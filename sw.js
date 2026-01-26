@@ -3,7 +3,7 @@
  * Provides offline functionality for the PWA
  */
 
-const CACHE_NAME = 'easydiet-1.15.0';
+const CACHE_NAME = 'easydiet-1.15.1';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -160,7 +160,7 @@ async function updateCache(request) {
 
 // Handle messages from main thread
 self.addEventListener('message', (event) => {
-    if (event.data === 'skipWaiting') {
+    if (event.data === 'skipWaiting' || (event.data && event.data.type === 'SKIP_WAITING')) {
         self.skipWaiting();
     }
 });

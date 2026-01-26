@@ -2005,32 +2005,38 @@ async function clearCacheAndReload() {
         // Clear food data from IndexedDB to force fresh parse
         await db.clearFoods();
         await db.saveSetting('isDefaultData', null);
+        await db.saveSetting('searchFoods', null);
+        await db.saveSetting('foodDatabase', null);
         
-        // Unregister service workers
+        // Unregister service workers and tell them to skip waiting
         if ('serviceWorker' in navigator) {
             const registrations = await navigator.serviceWorker.getRegistrations();
             for (const registration of registrations) {
+                // Tell the waiting service worker to activate immediately
+                if (registration.waiting) {
+                    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                }
                 await registration.unregister();
             }
         }
         
-        // Clear caches
+        // Clear all caches
         if ('caches' in window) {
             const cacheNames = await caches.keys();
-            for (const cacheName of cacheNames) {
-                await caches.delete(cacheName);
-            }
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
         }
         
-        // Small delay to ensure cleanup completes
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Wait a bit for cleanup to complete
+        await new Promise(resolve => setTimeout(resolve, 300));
         
-        // Force reload with cache-busting query param
-        const url = new URL(window.location.href);
-        url.searchParams.set('_cb', Date.now());
-        window.location.href = url.toString();
+        // Force a true hard reload by navigating to a cache-busted URL
+        // Using replace() so we don't add to history, and adding timestamp to bust cache
+        const baseUrl = window.location.origin + window.location.pathname;
+        window.location.replace(baseUrl + '?reload=' + Date.now());
+        
     } catch (error) {
         console.error('Cache clear error:', error);
+        // Fallback: try location.reload with cache bypass
         window.location.reload(true);
     }
 }
