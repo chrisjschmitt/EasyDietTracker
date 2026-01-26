@@ -23,9 +23,12 @@
                 <h1 class="logo">
                     <span class="logo-icon">🥗</span>
                     <span class="logo-text">EasyDiet</span>
-                    <span class="version-tag" id="versionTag">v1.14.5</span>
+                    <span class="version-tag" id="versionTag">v1.15.0</span>
                 </h1>
                 <div class="header-actions">
+                    <button class="help-btn" id="helpBtn" aria-label="Help">
+                        <span>?</span>
+                    </button>
                     <button class="search-btn" id="searchBtn" aria-label="Search foods">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8"/>
@@ -630,6 +633,56 @@
                     </div>
                 </div>
                 <button class="btn btn-primary btn-large" id="confirmAddFood">Add to Log</button>
+            </div>
+        </div>
+
+        <!-- Help Modal -->
+        <div class="modal-overlay" id="helpModal">
+            <div class="modal-content help-modal">
+                <button class="modal-close" id="closeHelpModal">×</button>
+                <div class="help-header">
+                    <span class="help-icon">👋</span>
+                    <h3>Welcome to EasyDiet!</h3>
+                </div>
+                <div class="help-body">
+                    <div class="help-section">
+                        <h4>📊 Track Your Day</h4>
+                        <p>The calorie ring and progress bars show your daily intake. Tap any bar to see which foods contributed.</p>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h4>🍎 Log Food by Category</h4>
+                        <p><strong>Tap</strong> a food icon to add 1 serving.<br>
+                        <strong>Long-press</strong> to enter a specific amount.</p>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h4>🔍 Search Specific Foods</h4>
+                        <p>Tap the search icon to find foods from our database of 200+ items with detailed nutrition info.</p>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h4>ℹ️ Get More Info</h4>
+                        <p>Tap the <strong>ℹ</strong> button on any food or tracker to learn more about it.</p>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h4>🔄 Reset Your Day</h4>
+                        <p><strong>Tap</strong> the reset button to clear today's servings.<br>
+                        <strong>Long-press</strong> to clear all data and refresh the app.</p>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h4>⚙️ Customize Targets</h4>
+                        <p>Tap the gear icon to adjust your calorie and macro targets.</p>
+                    </div>
+                    
+                    <div class="help-tip">
+                        <span>💡</span>
+                        <p>Tap the <strong>?</strong> button anytime to see this help again.</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-large" id="dismissHelp">Got it!</button>
             </div>
         </div>
     </div>

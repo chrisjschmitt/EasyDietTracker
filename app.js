@@ -145,6 +145,12 @@ function cacheDOMElements() {
     // Header
     DOM.settingsBtn = document.getElementById('settingsBtn');
     DOM.searchBtn = document.getElementById('searchBtn');
+    DOM.helpBtn = document.getElementById('helpBtn');
+    
+    // Help Modal
+    DOM.helpModal = document.getElementById('helpModal');
+    DOM.closeHelpModal = document.getElementById('closeHelpModal');
+    DOM.dismissHelp = document.getElementById('dismissHelp');
     DOM.backBtn = document.getElementById('backBtn');
     DOM.goToSettingsBtn = document.getElementById('goToSettingsBtn');
     
@@ -2431,6 +2437,38 @@ async function addSearchedFoodToLog() {
 }
 
 // ============================================
+// Help Modal
+// ============================================
+
+/**
+ * Show help modal
+ */
+function showHelpModal() {
+    DOM.helpModal.classList.add('active');
+}
+
+/**
+ * Close help modal
+ */
+function closeHelpModal() {
+    DOM.helpModal.classList.remove('active');
+}
+
+/**
+ * Check if this is the first launch and show help
+ */
+async function checkFirstLaunch() {
+    const hasSeenHelp = await db.getSetting('hasSeenHelp');
+    if (!hasSeenHelp) {
+        // Small delay to let the app render first
+        setTimeout(() => {
+            showHelpModal();
+        }, 500);
+        await db.saveSetting('hasSeenHelp', true);
+    }
+}
+
+// ============================================
 // Navigation
 // ============================================
 
@@ -2909,6 +2947,14 @@ function setupEventListeners() {
         e.preventDefault();
         addSearchedFoodToLog();
     });
+    
+    // Help modal
+    DOM.helpBtn.addEventListener('click', showHelpModal);
+    DOM.closeHelpModal.addEventListener('click', closeHelpModal);
+    DOM.dismissHelp.addEventListener('click', closeHelpModal);
+    DOM.helpModal.addEventListener('click', (e) => {
+        if (e.target === DOM.helpModal) closeHelpModal();
+    });
 }
 
 // ============================================
@@ -2949,6 +2995,9 @@ async function init() {
         await loadFoodDatabase();
         await loadRecentFoods();
         await loadFavorites();
+        
+        // Check if first launch and show help
+        await checkFirstLaunch();
         
         // Register service worker
         registerServiceWorker();
