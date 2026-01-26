@@ -1,38 +1,69 @@
 Food Group,Food Category,Servings Low,Servings High,Serving Size,Calories,Protein,Fibre,Carbs,Sugar,Added Sugar,Total Fat,Unsaturated Fat,Monounsaturated Fat,Polyunsaturated Fat,Saturated Fat,Trans Fat,Ultra-processed,Hydration,Salt
-Fruits,"Apples, bananas, Oranges",1,4,One medium fruit,87,1,3.5,22,15,0,0.3,0.2,0.1,0.1,0.1,0,false,0.5,0
-Fruits,Berries,1,2,1 cup mixed berries,85,1.5,4,20,12,0,0.5,0.4,0.1,0.3,0.1,0,false,0.75,1
-Fruits,Grapes,1,2,1 cup grapes (151g),104,1.1,1.4,27,23,0,0.2,0.15,0.05,0.1,0.05,0,false,0.6,3
-Vegetables,"Calorie-free veggies (leafy greens, celery, cucumber, mushrooms)",2,4,Size of fist,7,0.5,1,1,0.5,0,0.1,0.08,0.02,0.06,0.02,0,false,0.75,20
-Vegetables,"Low calorie veggies (Carrots, Tomatoes, broccoli, cauliflower, green beans)",1,3,1 cup or medium sized veggie,26,1.3,1.8,5.75,2.5,0,0.2,0.15,0.05,0.1,0.05,0,false,0.7,35
-Vegetables,"Starchy veggies (potatoes, sweet potatoes, corn, parsnips)",1,2,1 cup or medium sized,140,3,4,32,4,0,0.5,0.35,0.1,0.25,0.15,0,false,0.5,15
-Vegetables,"Fatty veggies (Avocado, Olives) ",1,2,1/2 cup or half,120,1.5,5,6,1,0,11,9.5,7,1.5,1.5,0,false,0.4,200
-Grains,"Whole Wheat Bread, medium wrap, bun",3,6,1 slice (43g),81,4,1.9,15,1.4,1,1.1,0.7,0.2,0.5,0.2,0,false,0.15,150
-Grains,"Brown rice, Quinoa",1,3,1/2 cup cooked,110,3.2,2.2,21,0.7,0,1.4,1,0.4,0.6,0.3,0,false,0.4,5
-Grains,Oatmeal,1,2,1/2 cup dry oats,150,5,4,27,1,0,3,2.2,1,1.2,0.5,0,false,0.3,0
-Grains,Whole wheat pasta,1,3,1 cup cooked,175,8,6.5,37,0.8,0,1.3,0.9,0.2,0.7,0.2,0,false,0.5,5
-Grains,Regular pasta,0,1,1 cup cooked,200,7,2.5,43,0.8,0,1,0.7,0.1,0.6,0.2,0,true,0.5,5
-Protein,"Chicken Breast, Salmon, Trout",2,3,Palm of hand,150,25,0,0,0,0,6,4,2,2,1.5,0,false,0.4,75
-Protein,"Lean fish, seafood (cod, haddock, shrimp, scallops)",2,3,"Palm, cupped palm",90,20,0,0,0,0,1,0.6,0.2,0.4,0.3,0,false,0.5,200
-Protein,"Beef, pork, poultry (dark meat)",2,3,"Palm of hand, thickness included",225,25,0,0,0,0,13,6,5,1,5,0.5,false,0.35,70
-Protein,Eggs,0,1,1 large egg,70,6,0,1,1,0,5,3.2,2,1.2,1.5,0,false,0.25,70
-Protein,Tofu,1,3,Cupped palm,94,10,0.5,2,0.5,0,5,4,1,3,0.7,0,false,0.5,10
-Protein,"Legumes (chick peas, lentils, edamame)",1,3,Cupped palm,114,7.6,7.5,20,0.4,0,0.5,0.4,0.1,0.3,0.1,0,false,0.4,5
-Dairy,Milk,2,3,1 cup (244ml),103,8.2,0,12,12,0,2.4,0.8,0.7,0.1,1.5,0,false,0.9,100
-Dairy,Greek Yogurt,1,2,3/4 cup (170g),100,17,0,6,4,0,0.7,0.25,0.2,0.05,0.4,0,false,0.6,55
-Dairy,Cheese,1,2,1 oz cheddar (28g),113,7,0,0.4,0.1,0,9,3,2.5,0.3,5.5,0,false,0.1,180
-Fats & Oils,"Monounsaturated fat oils (olive, avocado)",2,4,1 tablespoon,119,0,0,0,0,0,13.5,11.5,10,1.5,2,0,false,0,0
-Fats & Oils,"Polyunsaturated fat oils (flax, walnut)",0,1,1 tablespoon,119,0,0,0,0,0,13.5,12,3,9,1.5,0,false,0,0
-Fats & Oils,Butter,1,3,1 tablespoon,102.5,0,0,0,0,0,11.5,4,3,0.4,7,0.3,false,0,90
-Fats & Oils,Saturated fat oils (coconut),0,0,1 tablespoon,119,0,0,0,0,0,13.5,1.5,0.8,0.2,11.5,0,false,0,0
-Nuts and Seeds,"Seeds (sunflower, chia, sesame etc.)",1,2,1 tablespoon,65,4,2,2,0,0,5.5,4.8,1,3.8,0.5,0,false,0,1
-Nuts and Seeds,"Nuts (walnuts, pecans, almonds, etc.)",1,1,Cupped palm,175,5,3,6,1,0,16,14,9,4,1.5,0,false,0,0
-Sweetner,"Sugar, honey, maple syrup",0,1,Thumb tip,20,0,0,5,5,5,0,0,0,0,0,0,false,0,0
-"Condiments, Dressings and Spreads","Light dressings - vinaigrettes, light Italian, Light balsamic",1,2,2 tablespoons,40,1,0.5,4.5,3,2,3,2.5,1.5,1,0.4,0,false,0.1,300
-"Condiments, Dressings and Spreads",Creamy dressings ,0,1,2 tablespoons,140,1,0.5,3.5,2,1,14,8,5,3,2.5,0.5,true,0.1,250
-"Condiments, Dressings and Spreads",Jams,0,1,1 tablespoon,50,0,0.5,13,11,10,0,0,0,0,0,0,true,0.05,5
-"Condiments, Dressings and Spreads",Nut butters,0,1,2 tablespoons,190,8,3,8,3,1,17,14,8,5,3,0,false,0,75
-Snacks,"Light snack - popcorn, no butter",1,2,3 cups,90,3,3.5,18,0,0,1,0.8,0.3,0.5,0.2,0,false,0.1,75
-Snacks,"Cookies, chocolate",0,1,Palm centre,150,2,1,20,20,18,7,3,2,1,3.5,0.5,true,0,100
-Beverages,"Water, diet pop",8,12,Cup or small glass,0,0,0,0,0,0,0,0,0,0,0,0,false,1,0
-Beverages,"Non-alcoholic drinks (fruit juice, pop)",0,1,Can,110,0,0,28,25,20,0,0,0,0,0,0,true,0.9,15
-Beverages,"Alcoholic drinks (beer, wine, spirits)",0,1,"Small can, 1/2 glass. 2 fingers",150,0,0,13,2,0,0,0,0,0,0,0,false,0.8,10
+Fruits,Citrus fruits (oranges; grapefruit; clementines),2,4,Tennis ball or fist-sized,62,1.2,3.1,15,12,0,0.2,0.1,0.05,0.05,0.03,0,false,0.6,0
+Fruits,Apples and pears,1,3,Tennis ball or fist-sized,95,0.5,4.4,25,19,0,0.3,0.15,0.05,0.1,0.05,0,false,0.5,2
+Fruits,Berries (strawberries; blueberries; raspberries),1,3,Cupped hand,70,1.1,4,17,10,0,0.4,0.3,0.1,0.2,0.05,0,false,0.7,1
+Fruits,Tropical fruits (mango; pineapple; papaya),1,2,Cupped hand,80,0.8,2.5,21,17,0,0.3,0.2,0.1,0.1,0.05,0,false,0.6,2
+Fruits,Stone fruits (peaches; plums; cherries),1,2,Fist or handful,60,1.2,2,15,13,0,0.4,0.25,0.1,0.15,0.05,0,false,0.6,0
+Fruits,Melons and grapes,1,2,Fist-sized wedge or handful,50,1,0.8,13,11,0,0.2,0.15,0.05,0.1,0.03,0,false,0.8,2
+Vegetables,Leafy greens (spinach; lettuce; kale),2,4,Two fists (raw),10,1,1.5,2,0.5,0,0.1,0.08,0.02,0.06,0.02,0,false,0.8,25
+Vegetables,Cruciferous (broccoli; cauliflower; Brussels sprouts),2,4,Fist-sized,30,2.5,2.5,6,1.5,0,0.3,0.2,0.05,0.15,0.05,0,false,0.7,30
+Vegetables,Root vegetables (carrots; beets; turnips),1,3,Fist or 1 medium,50,1.2,3,12,6,0,0.2,0.15,0.05,0.1,0.03,0,false,0.6,70
+Vegetables,Starchy vegetables (potatoes; sweet potatoes; corn),1,2,Fist-sized,140,3.5,4,32,4,0,0.2,0.1,0.03,0.07,0.05,0,false,0.5,15
+Vegetables,Nightshades and gourds (tomatoes; peppers; zucchini),1,3,Fist-sized,25,1.2,1.5,5,3,0,0.3,0.2,0.05,0.15,0.05,0,false,0.75,5
+Vegetables,Alliums (onions; garlic; leeks),1,2,Half fist (cooked),45,1.1,1.5,11,5,0,0.1,0.08,0.02,0.06,0.02,0,false,0.6,5
+Grains,Whole grain bread and wraps,3,6,Palm-sized slice,80,4,2,15,1.5,1,1.1,0.7,0.2,0.5,0.2,0,false,0.15,150
+Grains,Whole grains (brown rice; quinoa; farro),1,3,Cupped hand (cooked),110,4,2.5,22,0.5,0,1.5,1.1,0.4,0.7,0.3,0,false,0.4,5
+Grains,Oats and hot cereals,1,2,Cupped hand (dry),150,5,4,27,1,0,3,2.2,1,1.2,0.5,0,false,0.3,0
+Grains,Whole wheat pasta,1,2,Fist-sized (cooked),175,8,6,37,1,0,1.3,0.9,0.2,0.7,0.2,0,false,0.5,5
+Grains,Refined grains (white rice; white bread),0,2,Fist or palm-sized,180,4,1,40,1,0,0.5,0.3,0.1,0.2,0.1,0,true,0.4,200
+Grains,Cold cereals (bran flakes; granola; muesli),1,2,Fist-sized,150,4,4,32,8,5,2,1.5,0.5,1,0.4,0,false,0.1,180
+Protein,Poultry and oily fish (chicken; turkey; salmon),2,3,Palm of hand,150,25,0,0,0,0,6,4,2.5,1.5,1.5,0,false,0.4,75
+Protein,White fish and shellfish (cod; shrimp; scallops),2,3,Palm of hand,90,20,0,1,0,0,1,0.6,0.2,0.4,0.3,0,false,0.5,200
+Protein,Red meat (beef; pork; lamb),1,2,Palm of hand,225,25,0,0,0,0,13,6,5.5,0.5,5.5,0.3,false,0.35,70
+Protein,Eggs,1,2,1-2 eggs,140,12,0,1,1,0,10,6.5,4,2.5,3,0,false,0.5,140
+Protein,Legumes (lentils; chickpeas; black beans),1,3,Cupped hand,115,8,8,20,1,0,0.5,0.35,0.1,0.25,0.1,0,false,0.4,5
+Protein,Plant proteins (tofu; tempeh; edamame),1,3,Palm of hand,100,12,2,5,1,0,5,4,1.5,2.5,0.7,0,false,0.5,15
+Dairy,Milk (whole; 2%; skim),2,3,Small glass (fist-sized),105,8,0,12,12,0,3,1,0.8,0.2,1.8,0,false,0.9,100
+Dairy,Greek yogurt (plain),1,2,Cupped hand,100,17,0,6,4,0,0.7,0.25,0.2,0.05,0.4,0,false,0.6,55
+Dairy,Regular yogurt and kefir,1,2,Cupped hand,150,6,0,24,20,12,2.5,0.8,0.7,0.1,1.5,0,false,0.6,95
+Dairy,Hard cheese (cheddar; parmesan; Swiss),1,2,Two fingers or thumb-sized,115,7,0,0.5,0.1,0,9,3,2.5,0.3,5.5,0,false,0.1,180
+Dairy,Soft cheese and cottage cheese,1,2,Cupped hand,90,12,0,4,3,0,2,0.8,0.6,0.2,1.2,0,false,0.5,350
+Dairy,Plant-based milk (almond; oat; soy),1,3,Small glass (fist-sized),80,3,1,10,5,3,3,2.5,1.5,1,0.3,0,false,0.9,120
+Fats and Oils,Healthy oils (olive; avocado),2,4,Thumb-sized,120,0,0,0,0,0,14,12,10,2,2,0,false,0,0
+Fats and Oils,Omega-rich oils (flaxseed; walnut),0,2,Thumb-sized,120,0,0,0,0,0,14,12.5,3,9.5,1.5,0,false,0,0
+Fats and Oils,Butter and ghee,0,2,Thumb tip,100,0,0,0,0,0,11.5,4,3,0.5,7,0.3,false,0,90
+Fats and Oils,Mayonnaise,0,2,Thumb-sized,95,0.2,0,0.5,0.1,0,10,7,3,4,1.5,0,false,0.05,90
+Fats and Oils,Coconut oil and cream,0,1,Thumb-sized,120,0,0,0,0,0,14,1.5,0.8,0.3,12,0,false,0,0
+Nuts and Seeds,Tree nuts (almonds; walnuts; cashews),1,2,Small handful,175,6,3,6,1,0,16,14,9,5,1.5,0,false,0,0
+Nuts and Seeds,Peanuts,0,2,Small handful,165,7,2.5,5,1,0,14,11,7,4,2,0,false,0,5
+Nuts and Seeds,Seeds (chia; flax; sunflower; pumpkin),1,2,Two thumb-sized,100,5,4,5,0.3,0,8,7,2,5,0.8,0,false,0,2
+Nuts and Seeds,Nut and seed butters (peanut butter; almond butter),0,2,Thumb-sized,95,4,1,3,1,0.5,8,6.5,4,2.5,1.5,0,false,0,75
+Nuts and Seeds,Shredded coconut,0,1,Two thumb-sized,70,0.7,2,3,1.5,0,6.5,0.5,0.3,0.1,6,0,false,0.1,5
+Soups,Broth-based vegetable (minestrone; vegetable),1,2,Fist-sized bowl,80,3,3,15,4,0,1.5,1,0.5,0.5,0.3,0,false,0.9,480
+Soups,Broth-based protein (chicken noodle; beef barley),1,2,Fist-sized bowl,120,8,1.5,14,2,0,3,1.8,1,0.8,1,0,false,0.85,890
+Soups,Cream-based (cream of mushroom; clam chowder),0,1,Fist-sized bowl,200,5,1,15,3,0,13,5,4,1,6.5,0.3,false,0.75,870
+Soups,Bean and lentil (split pea; lentil; black bean),1,2,Fist-sized bowl,180,11,8,28,3,0,2,1.5,0.5,1,0.3,0,false,0.8,650
+Soups,Clear broths (chicken broth; beef broth; miso),0,2,Fist-sized bowl,15,2,0,1,0.5,0,0.5,0.3,0.1,0.2,0.1,0,false,0.95,860
+Soups,Instant soups (cup noodles; packet soups),0,1,1 packet prepared,290,6,1.5,40,3,1,12,5,3,2,5,0.5,true,0.7,1500
+Condiments,Vinaigrettes (balsamic; Italian; lemon),1,2,Thumb-sized,45,0,0,2,2,1,4,3.5,2,1.5,0.4,0,false,0.1,200
+Condiments,Creamy dressings (ranch; Caesar; blue cheese),0,1,Thumb-sized,140,1,0,2,1.5,1,15,8,5,3,3,0.3,true,0.1,280
+Condiments,Tomato-based (ketchup; marinara; salsa),1,2,Thumb-sized,20,0.5,0.5,5,3,2,0.1,0.08,0.02,0.06,0.02,0,false,0.2,180
+Condiments,Mustard and hot sauce,0,2,Thumb tip,10,0.5,0.3,1.5,0.3,0,0.5,0.4,0.2,0.2,0.05,0,false,0.1,200
+Condiments,Soy and Asian sauces (soy sauce; teriyaki; hoisin),0,2,Thumb tip,15,1.5,0,2.5,1.5,1,0,0,0,0,0,0,false,0.05,900
+Condiments,Spreads (hummus; guacamole; pesto),1,2,Thumb-sized,70,2,1.5,4,0.5,0,5,4,2.5,1.5,0.7,0,false,0.2,150
+Sweeteners,Natural sugars (white sugar; brown sugar; honey),0,2,Thumb tip,20,0,0,5,5,5,0,0,0,0,0,0,false,0,0
+Sweeteners,Syrups (maple syrup; agave; molasses),0,1,Thumb-sized,60,0,0,16,14,14,0,0,0,0,0,0,false,0.05,5
+Sweeteners,Jams and preserves,0,1,Thumb-sized,50,0.1,0.3,13,10,8,0,0,0,0,0,0,true,0.05,10
+Sweeteners,Zero-calorie sweeteners (stevia; monk fruit),0,2,Pinch or packet,0,0,0,0,0,0,0,0,0,0,0,0,true,0,0
+Snacks,Light snacks (air-popped popcorn; rice cakes),1,2,Two fists or 2-3 cakes,80,2.5,2.5,16,0.5,0,1,0.7,0.2,0.5,0.15,0,false,0.1,80
+Snacks,Whole grain crackers,0,2,Palm-sized portion,80,2,1.5,12,1,0.5,3,2,1,1,0.5,0,false,0.05,150
+Snacks,Chips and crisps,0,1,Small handful,150,2,1,15,0.5,0,10,6,3,3,2,0,true,0,180
+Snacks,Sweet snacks (cookies; chocolate; candy),0,1,Two fingers or small square,150,2,1,20,15,12,7,3,2,1,3.5,0.3,true,0,50
+Snacks,Protein and granola bars,0,1,1 bar,200,10,3,25,12,8,7,4.5,2,2.5,2,0,true,0.05,150
+Snacks,Frozen desserts (ice cream; frozen yogurt),0,1,Cupped hand,150,3,0.5,18,16,14,7,2.5,2,0.5,4.5,0.2,true,0.3,55
+Beverages,Water and zero-calorie drinks,8,12,Small glass (fist-sized),0,0,0,0,0,0,0,0,0,0,0,0,false,1,5
+Beverages,Coffee and tea (unsweetened),2,4,Small mug (fist-sized),2,0.3,0,0,0,0,0,0,0,0,0,0,false,0.95,5
+Beverages,Milk-based drinks (lattes; hot chocolate),0,2,Small mug (fist-sized),180,8,1,24,20,15,6,2,1.5,0.5,3.5,0,false,0.7,150
+Beverages,Fruit juices (orange; apple; grape),0,1,Small glass (fist-sized),110,1,0.5,26,22,0,0.3,0.2,0.05,0.15,0.05,0,false,0.9,5
+Beverages,Soft drinks and energy drinks,0,1,1 can,140,0,0,39,39,39,0,0,0,0,0,0,true,0.9,45
+Beverages,Alcoholic drinks (beer; wine; spirits),0,1,Half glass wine or small can beer,150,1,0,13,2,0,0,0,0,0,0,0,false,0.8,10
