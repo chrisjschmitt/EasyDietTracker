@@ -2421,7 +2421,7 @@ async function addSearchedFoodToLog() {
     // Update servings
     const currentServings = AppState.servings[existingFood.id] || 0;
     AppState.servings[existingFood.id] = currentServings + servings;
-    await saveTodayServings();
+    await db.saveServing(existingFood.id, AppState.servings[existingFood.id]);
     
     // Add to recent foods
     await addToRecentFoods(food);
