@@ -1252,16 +1252,7 @@ function attachFoodItemListeners() {
  * Increment serving by 1
  */
 async function incrementServing(foodId) {
-    console.log('incrementServing called with foodId:', foodId, 'type:', typeof foodId);
-    
     if (foodId === null || foodId === undefined || (typeof foodId === 'number' && isNaN(foodId))) {
-        console.error('Invalid foodId:', foodId);
-        return;
-    }
-    
-    const food = AppState.foods.find(f => f.id === foodId);
-    if (!food) {
-        console.error('Food not found for id:', foodId, 'Available IDs:', AppState.foods.map(f => f.id).slice(0, 10));
         return;
     }
     
@@ -1273,7 +1264,6 @@ async function incrementServing(foodId) {
     
     updateFoodItem(foodId);
     updateStats();
-    console.log('Serving incremented for', food.foodCategory, 'to', newValue);
 }
 
 /**
@@ -2029,70 +2019,45 @@ async function exportHistory() {
 async function clearCacheAndReload() {
     if (!confirm('Clear cache and food data, then reload? This will re-download the default food database.')) return;
     
-    console.log('=== CACHE CLEAR STARTED ===');
-    
     try {
-        // Step 1: Clear IndexedDB data
-        console.log('Step 1: Clearing IndexedDB...');
+        // Clear IndexedDB data
         await db.clearFoods();
         await db.saveSetting('isDefaultData', null);
         await db.saveSetting('searchFoods', null);
         await db.saveSetting('foodDatabase', null);
         await db.saveSetting('hasSeenHelp', null);
-        console.log('Step 1: Done');
         
-        // Step 2: Unregister service workers
-        console.log('Step 2: Unregistering service workers...');
+        // Unregister service workers
         if ('serviceWorker' in navigator) {
             const registrations = await navigator.serviceWorker.getRegistrations();
-            console.log(`Found ${registrations.length} service worker(s)`);
             for (const registration of registrations) {
                 if (registration.waiting) {
                     registration.waiting.postMessage({ type: 'SKIP_WAITING' });
                 }
-                const result = await registration.unregister();
-                console.log('Unregistered:', result);
+                await registration.unregister();
             }
         }
-        console.log('Step 2: Done');
         
-        // Step 3: Clear all caches
-        console.log('Step 3: Clearing caches...');
+        // Clear all caches
         if ('caches' in window) {
             const cacheNames = await caches.keys();
-            console.log('Caches to delete:', cacheNames);
-            for (const name of cacheNames) {
-                const deleted = await caches.delete(name);
-                console.log(`Deleted ${name}:`, deleted);
-            }
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
         }
-        console.log('Step 3: Done');
         
-        // Step 4: Wait and reload
-        console.log('Step 4: Waiting 500ms before reload...');
+        // Wait for cleanup then reload
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Clear the current page from browser cache by fetching with no-cache
-        console.log('Step 5: Reloading...');
-        
-        // Use fetch to bust the browser's HTTP cache for the HTML
+        // Pre-fetch to bust HTTP cache
         try {
-            await fetch(window.location.href, { 
-                cache: 'no-store',
-                headers: { 'Cache-Control': 'no-cache' }
-            });
-        } catch (e) {
-            console.log('Pre-fetch failed (ok):', e);
-        }
+            await fetch(window.location.href, { cache: 'no-store' });
+        } catch (e) { /* ok */ }
         
-        // Navigate to a fresh URL
-        const freshUrl = window.location.origin + window.location.pathname + '?v=' + Date.now();
-        console.log('Navigating to:', freshUrl);
-        window.location.href = freshUrl;
+        // Navigate to fresh URL
+        window.location.href = window.location.origin + window.location.pathname + '?v=' + Date.now();
         
     } catch (error) {
         console.error('Cache clear error:', error);
-        alert('Cache clear failed: ' + error.message + '\n\nTry a manual hard refresh (Cmd+Shift+R or Ctrl+Shift+R)');
+        alert('Cache clear failed. Try a manual hard refresh (Cmd+Shift+R or Ctrl+Shift+R)');
     }
 }
 
