@@ -27,28 +27,28 @@
   <circle cx="256" cy="256" r="190" fill="none" stroke="url(#ringGrad)" stroke-width="32" 
           stroke-linecap="round" stroke-dasharray="896 1200" transform="rotate(-90 256 256)"/>
   
-  <!-- Apple body -->
-  <path d="M256 140 
-           C200 140 160 190 160 260 
-           C160 340 200 400 256 400 
-           C312 400 352 340 352 260 
-           C352 190 312 140 256 140" 
+  <!-- Apple body - rounder shape -->
+  <path d="M256 155
+           C180 155 140 210 140 280
+           C140 355 190 385 256 385
+           C322 385 372 355 372 280
+           C372 210 332 155 256 155" 
         fill="url(#appleGrad)"/>
   
   <!-- Apple indent at top -->
-  <ellipse cx="256" cy="155" rx="25" ry="12" fill="#1a2027"/>
+  <ellipse cx="256" cy="168" rx="28" ry="14" fill="#1a2027"/>
   
   <!-- Apple highlight -->
-  <ellipse cx="215" cy="220" rx="25" ry="40" fill="white" opacity="0.15" transform="rotate(-20 215 220)"/>
+  <ellipse cx="200" cy="240" rx="30" ry="45" fill="white" opacity="0.15" transform="rotate(-15 200 240)"/>
   
   <!-- Stem -->
-  <path d="M256 155 Q256 120 270 105" stroke="#8b5a2b" stroke-width="12" stroke-linecap="round" fill="none"/>
+  <path d="M256 168 Q256 130 272 115" stroke="#8b5a2b" stroke-width="12" stroke-linecap="round" fill="none"/>
   
   <!-- Leaf -->
-  <path d="M270 105 Q310 80 320 110 Q300 105 285 125 Q275 110 270 105" fill="url(#leafGrad)"/>
-  <path d="M285 107 Q295 115 290 125" stroke="#56c4a8" stroke-width="2" fill="none" opacity="0.6"/>
+  <path d="M272 115 Q315 90 325 125 Q302 115 285 140 Q278 120 272 115" fill="url(#leafGrad)"/>
+  <path d="M290 118 Q300 128 294 140" stroke="#56c4a8" stroke-width="2" fill="none" opacity="0.6"/>
   
   <!-- Checkmark overlay -->
-  <path d="M200 260 L240 300 L320 210" 
+  <path d="M200 270 L240 310 L320 220" 
         stroke="white" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.95"/>
 </svg>
