@@ -65,5 +65,5 @@ Beverages,Water and zero-calorie drinks,8,12,Small glass (fist-sized),0,0,0,0,0,
 Beverages,Coffee and tea (unsweetened),2,4,Small mug (fist-sized),2,0.3,0,0,0,0,0,0,0,0,0,0,false,0.95,5
 Beverages,Fruit juices (orange; apple; grape),0,1,Small glass (fist-sized),110,1,0.5,26,22,0,0.3,0.2,0.05,0.15,0.05,0,false,0.9,5
 Beverages,Milk-based drinks (lattes; hot chocolate),0,2,Small mug (fist-sized),180,8,1,24,20,15,6,2,1.5,0.5,3.5,0,false,0.7,150
-Beverages,Alcoholic drinks (beer; wine; spirits),0,1,Half glass wine or small can beer,150,1,0,13,2,0,0,0,0,0,0,0,false,0.8,10
+Beverages,Alcoholic drinks (beer; wine; spirits),0,1,Half glass wine or small can beer,150,1,0,13,2,0,0,0,0,0,0,0,false,0,10
 Beverages,Soft drinks and energy drinks,0,1,1 can,140,0,0,39,39,39,0,0,0,0,0,0,true,0.9,45
