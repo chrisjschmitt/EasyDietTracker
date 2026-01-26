@@ -23,14 +23,22 @@
                 <h1 class="logo">
                     <span class="logo-icon">🥗</span>
                     <span class="logo-text">EasyDiet</span>
-                    <span class="version-tag" id="versionTag">v1.13.1</span>
+                    <span class="version-tag" id="versionTag">v1.14.0</span>
                 </h1>
-                <button class="settings-btn" id="settingsBtn" aria-label="Settings">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                    </svg>
-                </button>
+                <div class="header-actions">
+                    <button class="search-btn" id="searchBtn" aria-label="Search foods">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                    </button>
+                    <button class="settings-btn" id="settingsBtn" aria-label="Settings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -543,6 +551,85 @@
                     </div>
                     <button class="btn btn-primary" id="saveServing">Save</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Food Search Modal -->
+        <div class="modal-overlay" id="searchModal">
+            <div class="modal-content search-modal">
+                <button class="modal-close" id="closeSearchModal">×</button>
+                <div class="search-modal-header">
+                    <span class="search-modal-icon">🔍</span>
+                    <h3>Search Foods</h3>
+                </div>
+                <div class="search-modal-body">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="foodSearchInput" placeholder="Search for a food..." autocomplete="off">
+                        <button class="search-clear-btn" id="clearSearchBtn" hidden>×</button>
+                    </div>
+                    <div class="search-tabs">
+                        <button class="search-tab active" data-tab="search">Search</button>
+                        <button class="search-tab" data-tab="recent">Recent</button>
+                        <button class="search-tab" data-tab="favorites">Favorites</button>
+                    </div>
+                    <div class="search-results" id="searchResults">
+                        <div class="search-placeholder">
+                            <span class="placeholder-icon">🍎</span>
+                            <p>Type to search 200+ foods</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Food from Search Modal -->
+        <div class="modal-overlay" id="addFoodModal">
+            <div class="modal-content add-food-modal">
+                <button class="modal-close" id="closeAddFoodModal">×</button>
+                <div class="add-food-header">
+                    <span class="add-food-icon" id="addFoodIcon">🍎</span>
+                    <div class="add-food-title">
+                        <h3 id="addFoodName">Food Name</h3>
+                        <span class="add-food-brand" id="addFoodBrand"></span>
+                    </div>
+                    <button class="favorite-btn" id="toggleFavoriteBtn" title="Add to favorites">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="add-food-nutrition">
+                    <div class="nutrition-summary">
+                        <span class="serving-size" id="addFoodServing">1 serving</span>
+                    </div>
+                    <div class="nutrition-grid compact">
+                        <div class="nutrition-item">
+                            <span class="nutrition-value" id="addFoodCalories">0</span>
+                            <span class="nutrition-label">Cal</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span class="nutrition-value" id="addFoodProtein">0g</span>
+                            <span class="nutrition-label">Protein</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span class="nutrition-value" id="addFoodCarbs">0g</span>
+                            <span class="nutrition-label">Carbs</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span class="nutrition-value" id="addFoodFat">0g</span>
+                            <span class="nutrition-label">Fat</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="add-food-servings">
+                    <label>Number of Servings</label>
+                    <div class="serving-input-group">
+                        <button class="serving-adjust-btn" id="decreaseAddServing">−</button>
+                        <input type="number" id="addServingInput" step="0.5" min="0.5" max="20" value="1">
+                        <button class="serving-adjust-btn" id="increaseAddServing">+</button>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-large" id="confirmAddFood">Add to Log</button>
             </div>
         </div>
     </div>

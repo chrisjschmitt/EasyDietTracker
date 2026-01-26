@@ -111,7 +111,13 @@ const AppState = {
     waterCount: 0,
     exerciseCalories: 0,
     currentFoodId: null,
-    isDefaultData: false
+    isDefaultData: false,
+    // Food search database
+    foodDatabase: [],
+    recentFoods: [],
+    favorites: [],
+    currentSearchFood: null,
+    currentSearchTab: 'search'
 };
 
 // Activity level calorie bonuses
@@ -138,8 +144,33 @@ function cacheDOMElements() {
     
     // Header
     DOM.settingsBtn = document.getElementById('settingsBtn');
+    DOM.searchBtn = document.getElementById('searchBtn');
     DOM.backBtn = document.getElementById('backBtn');
     DOM.goToSettingsBtn = document.getElementById('goToSettingsBtn');
+    
+    // Search Modal
+    DOM.searchModal = document.getElementById('searchModal');
+    DOM.closeSearchModal = document.getElementById('closeSearchModal');
+    DOM.foodSearchInput = document.getElementById('foodSearchInput');
+    DOM.clearSearchBtn = document.getElementById('clearSearchBtn');
+    DOM.searchResults = document.getElementById('searchResults');
+    
+    // Add Food Modal
+    DOM.addFoodModal = document.getElementById('addFoodModal');
+    DOM.closeAddFoodModal = document.getElementById('closeAddFoodModal');
+    DOM.addFoodIcon = document.getElementById('addFoodIcon');
+    DOM.addFoodName = document.getElementById('addFoodName');
+    DOM.addFoodBrand = document.getElementById('addFoodBrand');
+    DOM.addFoodServing = document.getElementById('addFoodServing');
+    DOM.addFoodCalories = document.getElementById('addFoodCalories');
+    DOM.addFoodProtein = document.getElementById('addFoodProtein');
+    DOM.addFoodCarbs = document.getElementById('addFoodCarbs');
+    DOM.addFoodFat = document.getElementById('addFoodFat');
+    DOM.toggleFavoriteBtn = document.getElementById('toggleFavoriteBtn');
+    DOM.decreaseAddServing = document.getElementById('decreaseAddServing');
+    DOM.increaseAddServing = document.getElementById('increaseAddServing');
+    DOM.addServingInput = document.getElementById('addServingInput');
+    DOM.confirmAddFood = document.getElementById('confirmAddFood');
     
     // Stats
     DOM.calorieRing = document.getElementById('calorieRing');
@@ -2038,6 +2069,357 @@ async function clearFoodData() {
 }
 
 // ============================================
+// Food Search Database
+// ============================================
+
+/**
+ * Load the food database from JSON file
+ */
+async function loadFoodDatabase() {
+    try {
+        // Check if already loaded in IndexedDB
+        const cachedDatabase = await db.getSetting('foodDatabase');
+        if (cachedDatabase && cachedDatabase.length > 0) {
+            AppState.foodDatabase = cachedDatabase;
+            console.log(`Food database loaded from cache: ${cachedDatabase.length} items`);
+            return;
+        }
+        
+        // Fetch from JSON file
+        const response = await fetch('food-database.json');
+        if (!response.ok) {
+            throw new Error('Failed to load food database');
+        }
+        
+        const data = await response.json();
+        AppState.foodDatabase = data.foods || [];
+        
+        // Cache in IndexedDB
+        await db.saveSetting('foodDatabase', AppState.foodDatabase);
+        console.log(`Food database loaded: ${AppState.foodDatabase.length} items`);
+    } catch (error) {
+        console.error('Error loading food database:', error);
+        AppState.foodDatabase = [];
+    }
+}
+
+/**
+ * Load recent foods from storage
+ */
+async function loadRecentFoods() {
+    const recent = await db.getSetting('recentFoods');
+    AppState.recentFoods = recent || [];
+}
+
+/**
+ * Save recent foods to storage
+ */
+async function saveRecentFoods() {
+    // Keep only last 20 items
+    AppState.recentFoods = AppState.recentFoods.slice(0, 20);
+    await db.saveSetting('recentFoods', AppState.recentFoods);
+}
+
+/**
+ * Add food to recent list
+ */
+async function addToRecentFoods(food) {
+    // Remove if already exists
+    AppState.recentFoods = AppState.recentFoods.filter(f => f.id !== food.id);
+    // Add to beginning
+    AppState.recentFoods.unshift(food);
+    await saveRecentFoods();
+}
+
+/**
+ * Load favorites from storage
+ */
+async function loadFavorites() {
+    const favorites = await db.getSetting('favoriteFoods');
+    AppState.favorites = favorites || [];
+}
+
+/**
+ * Save favorites to storage
+ */
+async function saveFavorites() {
+    await db.saveSetting('favoriteFoods', AppState.favorites);
+}
+
+/**
+ * Toggle food as favorite
+ */
+async function toggleFavorite(food) {
+    const index = AppState.favorites.findIndex(f => f.id === food.id);
+    if (index >= 0) {
+        AppState.favorites.splice(index, 1);
+    } else {
+        AppState.favorites.unshift(food);
+    }
+    await saveFavorites();
+    updateFavoriteButton(food);
+}
+
+/**
+ * Check if food is a favorite
+ */
+function isFavorite(food) {
+    return AppState.favorites.some(f => f.id === food.id);
+}
+
+/**
+ * Update the favorite button state
+ */
+function updateFavoriteButton(food) {
+    const isFav = isFavorite(food);
+    DOM.toggleFavoriteBtn.classList.toggle('active', isFav);
+    DOM.toggleFavoriteBtn.title = isFav ? 'Remove from favorites' : 'Add to favorites';
+}
+
+/**
+ * Get icon for food category
+ */
+function getSearchFoodIcon(category) {
+    const iconMap = {
+        'Fruits': '🍎',
+        'Vegetables': '🥦',
+        'Protein': '🍗',
+        'Dairy': '🥛',
+        'Grains': '🌾',
+        'Nuts and Seeds': '🥜',
+        'Fats and Oils': '🫒',
+        'Condiments': '🍯',
+        'Sweeteners': '🍬',
+        'Beverages': '🥤',
+        'Snacks': '🍪',
+        'Fast Food': '🍔',
+        'Soups': '🥣',
+        'Prepared Meals': '🍝',
+        'Breakfast': '🥞',
+        'Baked Goods': '🧁'
+    };
+    return iconMap[category] || '🍽️';
+}
+
+/**
+ * Search foods in the database
+ */
+function searchFoods(query) {
+    if (!query || query.length < 2) {
+        return [];
+    }
+    
+    const lowerQuery = query.toLowerCase();
+    const words = lowerQuery.split(/\s+/).filter(w => w.length > 0);
+    
+    return AppState.foodDatabase
+        .filter(food => {
+            const searchText = `${food.name} ${food.brand || ''} ${food.category}`.toLowerCase();
+            return words.every(word => searchText.includes(word));
+        })
+        .slice(0, 50); // Limit results
+}
+
+/**
+ * Render search results
+ */
+function renderSearchResults(foods) {
+    if (foods.length === 0) {
+        DOM.searchResults.innerHTML = `
+            <div class="search-no-results">
+                <span class="no-results-icon">🔍</span>
+                <p>No foods found</p>
+            </div>
+        `;
+        return;
+    }
+    
+    DOM.searchResults.innerHTML = foods.map(food => `
+        <div class="search-result-item" data-food-id="${food.id}">
+            <span class="result-icon">${getSearchFoodIcon(food.category)}</span>
+            <div class="result-info">
+                <div class="result-name">${food.name}</div>
+                ${food.brand ? `<div class="result-brand">${food.brand}</div>` : ''}
+                <div class="result-meta">
+                    <span class="result-calories">${food.calories} cal</span>
+                    <span class="result-serving">${food.servingSize}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    // Attach click handlers
+    DOM.searchResults.querySelectorAll('.search-result-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const foodId = item.dataset.foodId;
+            const food = AppState.foodDatabase.find(f => f.id === foodId) ||
+                         AppState.recentFoods.find(f => f.id === foodId) ||
+                         AppState.favorites.find(f => f.id === foodId);
+            if (food) {
+                showAddFoodModal(food);
+            }
+        });
+    });
+}
+
+/**
+ * Render recent foods tab
+ */
+function renderRecentFoods() {
+    if (AppState.recentFoods.length === 0) {
+        DOM.searchResults.innerHTML = `
+            <div class="empty-tab-state">
+                <span class="empty-icon">🕐</span>
+                <p>No recent foods yet.<br>Foods you add will appear here.</p>
+            </div>
+        `;
+        return;
+    }
+    renderSearchResults(AppState.recentFoods);
+}
+
+/**
+ * Render favorites tab
+ */
+function renderFavorites() {
+    if (AppState.favorites.length === 0) {
+        DOM.searchResults.innerHTML = `
+            <div class="empty-tab-state">
+                <span class="empty-icon">⭐</span>
+                <p>No favorites yet.<br>Tap the star icon when adding a food.</p>
+            </div>
+        `;
+        return;
+    }
+    renderSearchResults(AppState.favorites);
+}
+
+/**
+ * Show search modal
+ */
+function showSearchModal() {
+    DOM.searchModal.classList.add('active');
+    DOM.foodSearchInput.value = '';
+    DOM.clearSearchBtn.hidden = true;
+    AppState.currentSearchTab = 'search';
+    
+    // Reset tabs
+    document.querySelectorAll('.search-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === 'search');
+    });
+    
+    // Show placeholder
+    DOM.searchResults.innerHTML = `
+        <div class="search-placeholder">
+            <span class="placeholder-icon">🍎</span>
+            <p>Type to search ${AppState.foodDatabase.length}+ foods</p>
+        </div>
+    `;
+    
+    // Focus input after animation
+    setTimeout(() => DOM.foodSearchInput.focus(), 100);
+}
+
+/**
+ * Close search modal
+ */
+function closeSearchModal() {
+    DOM.searchModal.classList.remove('active');
+}
+
+/**
+ * Show add food modal
+ */
+function showAddFoodModal(food) {
+    AppState.currentSearchFood = food;
+    
+    DOM.addFoodIcon.textContent = getSearchFoodIcon(food.category);
+    DOM.addFoodName.textContent = food.name;
+    DOM.addFoodBrand.textContent = food.brand || '';
+    DOM.addFoodServing.textContent = food.servingSize;
+    DOM.addFoodCalories.textContent = food.calories;
+    DOM.addFoodProtein.textContent = `${food.protein}g`;
+    DOM.addFoodCarbs.textContent = `${food.carbs}g`;
+    DOM.addFoodFat.textContent = `${food.totalFat}g`;
+    DOM.addServingInput.value = 1;
+    
+    updateFavoriteButton(food);
+    
+    DOM.addFoodModal.classList.add('active');
+}
+
+/**
+ * Close add food modal
+ */
+function closeAddFoodModal() {
+    DOM.addFoodModal.classList.remove('active');
+    AppState.currentSearchFood = null;
+}
+
+/**
+ * Add searched food to the daily log
+ */
+async function addSearchedFoodToLog() {
+    const food = AppState.currentSearchFood;
+    if (!food) return;
+    
+    const servings = parseFloat(DOM.addServingInput.value) || 1;
+    
+    // Create a unique ID for this logged food entry
+    const loggedFoodId = `search-${food.id}-${Date.now()}`;
+    
+    // Add to the main foods list if not already there
+    let existingFood = AppState.foods.find(f => f.id === `search-${food.id}`);
+    
+    if (!existingFood) {
+        // Create a food entry compatible with the app's food structure
+        existingFood = {
+            id: `search-${food.id}`,
+            foodGroup: food.category,
+            foodCategory: food.name,
+            servingsLow: 0,
+            servingsHigh: 10,
+            servingSize: food.servingSize,
+            calories: food.calories,
+            protein: food.protein,
+            fibre: food.fibre,
+            carbs: food.carbs,
+            sugar: food.sugar,
+            addedSugar: food.addedSugar,
+            totalFat: food.totalFat,
+            saturatedFat: food.saturatedFat,
+            transFat: food.transFat,
+            ultraProcessed: food.ultraProcessed,
+            water: food.hydration || 0,
+            salt: food.salt || 0,
+            isSearchFood: true
+        };
+        
+        AppState.foods.push(existingFood);
+        await db.saveFood(existingFood);
+    }
+    
+    // Update servings
+    const currentServings = AppState.servings[existingFood.id] || 0;
+    AppState.servings[existingFood.id] = currentServings + servings;
+    await saveTodayServings();
+    
+    // Add to recent foods
+    await addToRecentFoods(food);
+    
+    // Re-render and update stats
+    renderFoodGroups();
+    updateStats();
+    
+    // Close modals
+    closeAddFoodModal();
+    closeSearchModal();
+    
+    // Show confirmation
+    console.log(`Added ${servings} serving(s) of ${food.name}`);
+}
+
+// ============================================
 // Navigation
 // ============================================
 
@@ -2412,6 +2794,101 @@ function setupEventListeners() {
     
     // Back to top button
     DOM.backToTopBtn.addEventListener('click', scrollToTop);
+    
+    // Search modal
+    DOM.searchBtn.addEventListener('click', showSearchModal);
+    DOM.closeSearchModal.addEventListener('click', closeSearchModal);
+    DOM.searchModal.addEventListener('click', (e) => {
+        if (e.target === DOM.searchModal) closeSearchModal();
+    });
+    
+    // Search input
+    let searchTimeout;
+    DOM.foodSearchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        DOM.clearSearchBtn.hidden = query.length === 0;
+        
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            if (query.length >= 2) {
+                const results = searchFoods(query);
+                renderSearchResults(results);
+            } else if (query.length === 0) {
+                DOM.searchResults.innerHTML = `
+                    <div class="search-placeholder">
+                        <span class="placeholder-icon">🍎</span>
+                        <p>Type to search ${AppState.foodDatabase.length}+ foods</p>
+                    </div>
+                `;
+            }
+        }, 200);
+    });
+    
+    DOM.clearSearchBtn.addEventListener('click', () => {
+        DOM.foodSearchInput.value = '';
+        DOM.clearSearchBtn.hidden = true;
+        DOM.foodSearchInput.focus();
+        DOM.searchResults.innerHTML = `
+            <div class="search-placeholder">
+                <span class="placeholder-icon">🍎</span>
+                <p>Type to search ${AppState.foodDatabase.length}+ foods</p>
+            </div>
+        `;
+    });
+    
+    // Search tabs
+    document.querySelectorAll('.search-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabName = tab.dataset.tab;
+            AppState.currentSearchTab = tabName;
+            
+            document.querySelectorAll('.search-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tabName);
+            });
+            
+            if (tabName === 'search') {
+                const query = DOM.foodSearchInput.value.trim();
+                if (query.length >= 2) {
+                    renderSearchResults(searchFoods(query));
+                } else {
+                    DOM.searchResults.innerHTML = `
+                        <div class="search-placeholder">
+                            <span class="placeholder-icon">🍎</span>
+                            <p>Type to search ${AppState.foodDatabase.length}+ foods</p>
+                        </div>
+                    `;
+                }
+            } else if (tabName === 'recent') {
+                renderRecentFoods();
+            } else if (tabName === 'favorites') {
+                renderFavorites();
+            }
+        });
+    });
+    
+    // Add food modal
+    DOM.closeAddFoodModal.addEventListener('click', closeAddFoodModal);
+    DOM.addFoodModal.addEventListener('click', (e) => {
+        if (e.target === DOM.addFoodModal) closeAddFoodModal();
+    });
+    
+    DOM.decreaseAddServing.addEventListener('click', () => {
+        const current = parseFloat(DOM.addServingInput.value) || 1;
+        DOM.addServingInput.value = Math.max(0.5, current - 0.5);
+    });
+    
+    DOM.increaseAddServing.addEventListener('click', () => {
+        const current = parseFloat(DOM.addServingInput.value) || 1;
+        DOM.addServingInput.value = Math.min(20, current + 0.5);
+    });
+    
+    DOM.toggleFavoriteBtn.addEventListener('click', () => {
+        if (AppState.currentSearchFood) {
+            toggleFavorite(AppState.currentSearchFood);
+        }
+    });
+    
+    DOM.confirmAddFood.addEventListener('click', addSearchedFoodToLog);
 }
 
 // ============================================
@@ -2447,6 +2924,11 @@ async function init() {
         // Load data
         await loadSettings();
         await loadFoods();
+        
+        // Load food search database
+        await loadFoodDatabase();
+        await loadRecentFoods();
+        await loadFavorites();
         
         // Register service worker
         registerServiceWorker();
