@@ -1870,8 +1870,13 @@ async function clearCacheAndReload() {
             }
         }
         
-        // Force reload from server
-        window.location.reload(true);
+        // Small delay to ensure cleanup completes
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Force reload with cache-busting query param
+        const url = new URL(window.location.href);
+        url.searchParams.set('_cb', Date.now());
+        window.location.href = url.toString();
     } catch (error) {
         console.error('Cache clear error:', error);
         window.location.reload(true);
