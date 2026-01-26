@@ -1,7 +1,7 @@
 {
     "name": "EasyDiet Tracker",
     "short_name": "EasyDiet",
-    "version": "1.14.2",
+    "version": "1.14.3",
     "description": "Track your daily food consumption by food groups with ease",
     "start_url": "/",
     "display": "standalone",

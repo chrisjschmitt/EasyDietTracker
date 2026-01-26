@@ -2369,10 +2369,16 @@ function closeAddFoodModal() {
  * Add searched food to the daily log
  */
 async function addSearchedFoodToLog() {
+    console.log('addSearchedFoodToLog called');
+    
     const food = AppState.currentSearchFood;
-    if (!food) return;
+    if (!food) {
+        console.error('No current search food');
+        return;
+    }
     
     const servings = parseFloat(DOM.addServingInput.value) || 1;
+    console.log('Adding', servings, 'servings of', food.name);
     
     // Create a food ID for this searched food
     const searchFoodId = `search-${food.id}`;
@@ -2421,19 +2427,20 @@ async function addSearchedFoodToLog() {
     await addToRecentFoods(food);
     
     // Close modals first (better UX)
-    closeAddFoodModal();
-    closeSearchModal();
+    console.log('Closing modals...');
+    DOM.addFoodModal.classList.remove('active');
+    DOM.searchModal.classList.remove('active');
+    AppState.currentSearchFood = null;
     
     // Re-render and update stats
     try {
+        console.log('Re-rendering...');
         renderFoodGroups();
         updateStats();
+        console.log('Done!');
     } catch (error) {
         console.error('Error updating display:', error);
     }
-    
-    // Show confirmation
-    console.log(`Added ${servings} serving(s) of ${food.name}`);
 }
 
 // ============================================
@@ -2905,7 +2912,16 @@ function setupEventListeners() {
         }
     });
     
-    DOM.confirmAddFood.addEventListener('click', addSearchedFoodToLog);
+    DOM.confirmAddFood.addEventListener('click', (e) => {
+        e.preventDefault();
+        addSearchedFoodToLog();
+    });
+    
+    // Touch support for mobile
+    DOM.confirmAddFood.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        addSearchedFoodToLog();
+    });
 }
 
 // ============================================
