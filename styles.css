@@ -2004,6 +2004,19 @@ select:focus {
     font-size: 2.5rem;
 }
 
+.serving-size-info {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.serving-size-info strong {
+    color: var(--accent-primary);
+}
+
 .serving-modal-body {
     padding: var(--spacing-lg);
     text-align: center;

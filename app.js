@@ -301,6 +301,7 @@ function cacheDOMElements() {
     // Serving modal elements
     DOM.servingIcon = document.getElementById('servingIcon');
     DOM.servingCategoryName = document.getElementById('servingCategoryName');
+    DOM.servingSizeInfo = document.getElementById('servingSizeInfo');
 }
 
 // ============================================
@@ -1730,6 +1731,7 @@ function showServingModal(foodId) {
     
     DOM.servingIcon.textContent = getFoodIcon(food.foodCategory);
     DOM.servingCategoryName.textContent = food.foodCategory;
+    DOM.servingSizeInfo.innerHTML = `<strong>1 serving</strong> = ${food.servingSize || 'Not specified'}`;
     DOM.servingInput.value = AppState.servings[foodId] || 0;
     
     DOM.servingModal.classList.add('active');
