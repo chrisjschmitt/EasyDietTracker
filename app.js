@@ -2420,13 +2420,17 @@ async function addSearchedFoodToLog() {
     // Add to recent foods
     await addToRecentFoods(food);
     
-    // Re-render and update stats
-    renderFoodGroups();
-    updateStats();
-    
-    // Close modals
+    // Close modals first (better UX)
     closeAddFoodModal();
     closeSearchModal();
+    
+    // Re-render and update stats
+    try {
+        renderFoodGroups();
+        updateStats();
+    } catch (error) {
+        console.error('Error updating display:', error);
+    }
     
     // Show confirmation
     console.log(`Added ${servings} serving(s) of ${food.name}`);
