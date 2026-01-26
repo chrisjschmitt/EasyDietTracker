@@ -5,7 +5,7 @@ Fruits,Apples and pears,1,3,Tennis ball or fist-sized,95,0.5,4.4,25,19,0,0.3,0.1
 Fruits,Stone fruits (peaches; plums; cherries),1,2,Fist or handful,60,1.2,2,15,13,0,0.4,0.25,0.1,0.15,0.05,0,false,0.6,0
 Fruits,Melons and grapes,1,2,Fist-sized wedge or handful,50,1,0.8,13,11,0,0.2,0.15,0.05,0.1,0.03,0,false,0.8,2
 Fruits,Tropical fruits (mango; pineapple; papaya),1,2,Cupped hand,80,0.8,2.5,21,17,0,0.3,0.2,0.1,0.1,0.05,0,false,0.6,2
-Vegetables,Leafy greens (spinach; lettuce; kale),2,4,Two fists (raw),10,1,1.5,2,0.5,0,0.1,0.08,0.02,0.06,0.02,0,false,0.8,25
+Vegetables,Leafy greens and mushrooms (spinach; kale; mushrooms),2,4,Two fists (raw) or fist of mushrooms,12,1.5,1.5,2,0.5,0,0.15,0.1,0.02,0.08,0.02,0,false,0.8,20
 Vegetables,Cruciferous (broccoli; cauliflower; Brussels sprouts),2,4,Fist-sized,30,2.5,2.5,6,1.5,0,0.3,0.2,0.05,0.15,0.05,0,false,0.7,30
 Vegetables,Nightshades and gourds (tomatoes; peppers; zucchini),1,3,Fist-sized,25,1.2,1.5,5,3,0,0.3,0.2,0.05,0.15,0.05,0,false,0.75,5
 Vegetables,Alliums (onions; garlic; leeks),1,2,Half fist (cooked),45,1.1,1.5,11,5,0,0.1,0.08,0.02,0.06,0.02,0,false,0.6,5
