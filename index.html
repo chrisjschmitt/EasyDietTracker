@@ -23,7 +23,7 @@
                 <h1 class="logo">
                     <span class="logo-icon">🥗</span>
                     <span class="logo-text">EasyDiet</span>
-                    <span class="version-tag" id="versionTag">v1.12.5</span>
+                    <span class="version-tag" id="versionTag">v1.13.0</span>
                 </h1>
                 <button class="settings-btn" id="settingsBtn" aria-label="Settings">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -135,6 +135,13 @@
                 </div>
             </section>
 
+            <!-- Food Group Navigation -->
+            <nav class="food-group-nav" id="foodGroupNav">
+                <div class="nav-scroll-container" id="navScrollContainer">
+                    <!-- Populated dynamically with food group icons -->
+                </div>
+            </nav>
+
             <!-- Food Groups Container -->
             <section class="food-groups-container" id="foodGroupsContainer">
                 <div class="empty-state" id="emptyState">
@@ -165,6 +172,13 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
                     <path d="M3 3v5h5"/>
+                </svg>
+            </button>
+            
+            <!-- Back to Top Button -->
+            <button class="back-to-top-btn" id="backToTopBtn" title="Back to tracker" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 15l-6-6-6 6"/>
                 </svg>
             </button>
         </main>

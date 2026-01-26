@@ -132,6 +132,9 @@ function cacheDOMElements() {
     DOM.settingsScreen = document.getElementById('settingsScreen');
     DOM.foodGroupsContainer = document.getElementById('foodGroupsContainer');
     DOM.emptyState = document.getElementById('emptyState');
+    DOM.foodGroupNav = document.getElementById('foodGroupNav');
+    DOM.navScrollContainer = document.getElementById('navScrollContainer');
+    DOM.backToTopBtn = document.getElementById('backToTopBtn');
     
     // Header
     DOM.settingsBtn = document.getElementById('settingsBtn');
@@ -729,6 +732,103 @@ function updateFileInfo() {
 // ============================================
 
 /**
+ * Generate a slug from group name for use as ID
+ */
+function slugify(text) {
+    return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+/**
+ * Render food group navigation bar
+ */
+function renderFoodGroupNav(groupNames) {
+    DOM.navScrollContainer.innerHTML = '';
+    
+    if (groupNames.length === 0) {
+        DOM.foodGroupNav.hidden = true;
+        return;
+    }
+    
+    DOM.foodGroupNav.hidden = false;
+    
+    groupNames.forEach(groupName => {
+        const navItem = document.createElement('button');
+        navItem.className = 'nav-item';
+        navItem.dataset.group = slugify(groupName);
+        navItem.innerHTML = `
+            <span class="nav-item-icon">${getGroupIcon(groupName)}</span>
+            <span class="nav-item-label">${groupName}</span>
+        `;
+        navItem.addEventListener('click', () => scrollToFoodGroup(slugify(groupName)));
+        DOM.navScrollContainer.appendChild(navItem);
+    });
+}
+
+/**
+ * Scroll to a specific food group
+ */
+function scrollToFoodGroup(groupSlug) {
+    const groupEl = document.getElementById(`group-${groupSlug}`);
+    if (groupEl) {
+        const navHeight = DOM.foodGroupNav.offsetHeight;
+        const elementPosition = groupEl.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({
+            top: elementPosition - navHeight - 10,
+            behavior: 'smooth'
+        });
+        
+        // Update active nav item
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.toggle('active', item.dataset.group === groupSlug);
+        });
+    }
+}
+
+/**
+ * Update active nav item based on scroll position
+ */
+function updateActiveNavItem() {
+    const navHeight = DOM.foodGroupNav.offsetHeight;
+    const groups = document.querySelectorAll('.food-group');
+    let activeGroup = null;
+    
+    groups.forEach(group => {
+        const rect = group.getBoundingClientRect();
+        if (rect.top <= navHeight + 50 && rect.bottom > navHeight) {
+            activeGroup = group.id.replace('group-', '');
+        }
+    });
+    
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.group === activeGroup);
+        
+        // Auto-scroll nav to keep active item visible
+        if (item.dataset.group === activeGroup) {
+            item.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+    });
+}
+
+/**
+ * Update back-to-top button visibility
+ */
+function updateBackToTopVisibility() {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const showButton = scrollTop > 300;
+    DOM.backToTopBtn.hidden = !showButton;
+}
+
+/**
+ * Scroll back to the top (tracker section)
+ */
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+/**
  * Render food groups
  */
 function renderFoodGroups() {
@@ -746,13 +846,18 @@ function renderFoodGroups() {
     
     if (Object.keys(grouped).length === 0) {
         DOM.foodGroupsContainer.appendChild(DOM.emptyState.cloneNode(true));
+        renderFoodGroupNav([]);
         return;
     }
+    
+    // Render food group navigation
+    renderFoodGroupNav(Object.keys(grouped));
     
     // Render each group
     for (const [groupName, foods] of Object.entries(grouped)) {
         const groupEl = document.createElement('div');
         groupEl.className = 'food-group';
+        groupEl.id = `group-${slugify(groupName)}`;
         
         groupEl.innerHTML = `
             <div class="group-header">
@@ -2293,6 +2398,20 @@ function setupEventListeners() {
             }
         }
     });
+    
+    // Scroll event listeners for navigation
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+        // Debounce scroll events
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            updateActiveNavItem();
+            updateBackToTopVisibility();
+        }, 50);
+    }, { passive: true });
+    
+    // Back to top button
+    DOM.backToTopBtn.addEventListener('click', scrollToTop);
 }
 
 // ============================================
