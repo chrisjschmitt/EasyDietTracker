@@ -2001,43 +2001,70 @@ async function exportHistory() {
 async function clearCacheAndReload() {
     if (!confirm('Clear cache and food data, then reload? This will re-download the default food database.')) return;
     
+    console.log('=== CACHE CLEAR STARTED ===');
+    
     try {
-        // Clear food data from IndexedDB to force fresh parse
+        // Step 1: Clear IndexedDB data
+        console.log('Step 1: Clearing IndexedDB...');
         await db.clearFoods();
         await db.saveSetting('isDefaultData', null);
         await db.saveSetting('searchFoods', null);
         await db.saveSetting('foodDatabase', null);
+        await db.saveSetting('hasSeenHelp', null);
+        console.log('Step 1: Done');
         
-        // Unregister service workers and tell them to skip waiting
+        // Step 2: Unregister service workers
+        console.log('Step 2: Unregistering service workers...');
         if ('serviceWorker' in navigator) {
             const registrations = await navigator.serviceWorker.getRegistrations();
+            console.log(`Found ${registrations.length} service worker(s)`);
             for (const registration of registrations) {
-                // Tell the waiting service worker to activate immediately
                 if (registration.waiting) {
                     registration.waiting.postMessage({ type: 'SKIP_WAITING' });
                 }
-                await registration.unregister();
+                const result = await registration.unregister();
+                console.log('Unregistered:', result);
             }
         }
+        console.log('Step 2: Done');
         
-        // Clear all caches
+        // Step 3: Clear all caches
+        console.log('Step 3: Clearing caches...');
         if ('caches' in window) {
             const cacheNames = await caches.keys();
-            await Promise.all(cacheNames.map(name => caches.delete(name)));
+            console.log('Caches to delete:', cacheNames);
+            for (const name of cacheNames) {
+                const deleted = await caches.delete(name);
+                console.log(`Deleted ${name}:`, deleted);
+            }
+        }
+        console.log('Step 3: Done');
+        
+        // Step 4: Wait and reload
+        console.log('Step 4: Waiting 500ms before reload...');
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Clear the current page from browser cache by fetching with no-cache
+        console.log('Step 5: Reloading...');
+        
+        // Use fetch to bust the browser's HTTP cache for the HTML
+        try {
+            await fetch(window.location.href, { 
+                cache: 'no-store',
+                headers: { 'Cache-Control': 'no-cache' }
+            });
+        } catch (e) {
+            console.log('Pre-fetch failed (ok):', e);
         }
         
-        // Wait a bit for cleanup to complete
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        // Force a true hard reload by navigating to a cache-busted URL
-        // Using replace() so we don't add to history, and adding timestamp to bust cache
-        const baseUrl = window.location.origin + window.location.pathname;
-        window.location.replace(baseUrl + '?reload=' + Date.now());
+        // Navigate to a fresh URL
+        const freshUrl = window.location.origin + window.location.pathname + '?v=' + Date.now();
+        console.log('Navigating to:', freshUrl);
+        window.location.href = freshUrl;
         
     } catch (error) {
         console.error('Cache clear error:', error);
-        // Fallback: try location.reload with cache bypass
-        window.location.reload(true);
+        alert('Cache clear failed: ' + error.message + '\n\nTry a manual hard refresh (Cmd+Shift+R or Ctrl+Shift+R)');
     }
 }
 
