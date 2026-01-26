@@ -2192,13 +2192,46 @@ function setupEventListeners() {
         });
     });
     
-    // Macro bars and calorie ring show breakdown on tap
+    // Macro bars and calorie ring show breakdown on tap (with scroll detection)
+    const MACRO_MOVE_THRESHOLD = 10; // pixels - if finger moves more than this, it's a scroll
+    
     document.querySelectorAll('.macro-item, .calorie-ring').forEach(item => {
         const nutrient = item.dataset.nutrient;
+        let startX = 0;
+        let startY = 0;
+        let hasMoved = false;
         
+        // Mouse click (desktop)
         item.addEventListener('click', (e) => {
             // Don't trigger if clicking info button or exercise button
             if (e.target.closest('.macro-info-btn') || e.target.closest('.calorie-info-btn') || e.target.closest('.exercise-btn')) return;
+            showBreakdown(nutrient);
+        });
+        
+        // Touch events with scroll detection (mobile)
+        item.addEventListener('touchstart', (e) => {
+            hasMoved = false;
+            if (e.touches && e.touches[0]) {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+        
+        item.addEventListener('touchmove', (e) => {
+            if (e.touches && e.touches[0]) {
+                const deltaX = Math.abs(e.touches[0].clientX - startX);
+                const deltaY = Math.abs(e.touches[0].clientY - startY);
+                if (deltaX > MACRO_MOVE_THRESHOLD || deltaY > MACRO_MOVE_THRESHOLD) {
+                    hasMoved = true;
+                }
+            }
+        }, { passive: true });
+        
+        item.addEventListener('touchend', (e) => {
+            // Don't trigger if scrolling or clicking buttons
+            if (hasMoved) return;
+            if (e.target.closest('.macro-info-btn') || e.target.closest('.calorie-info-btn') || e.target.closest('.exercise-btn')) return;
+            e.preventDefault();
             showBreakdown(nutrient);
         });
     });
