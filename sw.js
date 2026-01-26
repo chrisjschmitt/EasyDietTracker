@@ -3,7 +3,7 @@
  * Provides offline functionality for the PWA
  */
 
-const CACHE_NAME = 'easydiet-1.16.0';
+const CACHE_NAME = 'easydiet-1.16.0.1';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -14,7 +14,10 @@ const STATIC_ASSETS = [
     '/manifest.json',
     '/default-data.csv',
     '/food-database.json',
-    '/icons/icon.svg'
+    '/icons/icon.svg',
+    '/icons/icon-192.png',
+    '/icons/icon-512.png',
+    '/icons/apple-touch-icon.png'
 ];
 
 const EXTERNAL_ASSETS = [
