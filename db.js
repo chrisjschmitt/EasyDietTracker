@@ -147,9 +147,9 @@ class Database {
             // Clear existing foods
             store.clear();
 
-            // Add new foods
-            foods.forEach((food, index) => {
-                store.add({ ...food, id: index + 1 });
+            // Add new foods - preserve original IDs (can be string or number)
+            foods.forEach((food) => {
+                store.add(food);
             });
 
             transaction.oncomplete = () => resolve();

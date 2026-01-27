@@ -692,14 +692,18 @@ async function migrateToStableIds() {
 async function loadDefaultFoodData() {
     try {
         console.log('Loading default food data...');
-        const response = await fetch('default-data.csv');
+        const response = await fetch('default-data.csv', { cache: 'no-cache' });
         if (!response.ok) {
-            console.warn('Could not load default-data.csv');
+            console.error('Could not load default-data.csv - status:', response.status);
+            alert('Failed to load food database. Please check your internet connection and reload.');
             return;
         }
         
         const csvText = await response.text();
+        console.log('CSV loaded, length:', csvText.length);
+        
         const foods = parseCSVText(csvText);
+        console.log('Parsed foods:', foods.length);
         
         if (foods.length > 0) {
             await db.saveFoods(foods);
@@ -707,9 +711,13 @@ async function loadDefaultFoodData() {
             AppState.isDefaultData = true;
             await db.saveSetting('isDefaultData', true);
             console.log(`Loaded ${foods.length} default food categories`);
+        } else {
+            console.error('No foods parsed from CSV');
+            alert('Food database appears to be empty. Please reload the app.');
         }
     } catch (error) {
-        console.warn('Failed to load default food data:', error);
+        console.error('Failed to load default food data:', error);
+        alert('Failed to load food database: ' + error.message);
     }
 }
 
