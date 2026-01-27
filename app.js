@@ -606,6 +606,12 @@ async function loadFoods() {
     // If no foods loaded, try to load default data
     if (AppState.foods.length === 0) {
         await loadDefaultFoodData();
+    } else {
+        // Check if foods need ID migration (old timestamp-based IDs)
+        const needsMigration = AppState.foods.some(f => f.id && f.id.match(/^food_\d+_\d{13,}$/));
+        if (needsMigration) {
+            await migrateToStableIds();
+        }
     }
     
     // Load any previously added search foods
@@ -621,6 +627,63 @@ async function loadFoods() {
     renderFoodGroups();
     updateStats();
     updateFileInfo();
+}
+
+/**
+ * Migrate from timestamp-based IDs to stable IDs
+ */
+async function migrateToStableIds() {
+    console.log('Migrating food IDs to stable format...');
+    
+    // Get current servings before migration
+    const oldServings = await db.getTodayServings();
+    
+    // Build a map from old ID to food category
+    const oldIdToCategory = {};
+    AppState.foods.forEach(food => {
+        oldIdToCategory[food.id] = food.foodCategory;
+    });
+    
+    // Re-parse CSV to get foods with stable IDs
+    try {
+        const response = await fetch('default-data.csv');
+        if (!response.ok) return;
+        
+        const csvText = await response.text();
+        const newFoods = parseCSVText(csvText);
+        
+        if (newFoods.length === 0) return;
+        
+        // Build a map from category name to new stable ID
+        const categoryToNewId = {};
+        newFoods.forEach(food => {
+            categoryToNewId[food.foodCategory] = food.id;
+        });
+        
+        // Migrate servings from old IDs to new IDs
+        for (const [oldId, servingCount] of Object.entries(oldServings)) {
+            if (servingCount > 0) {
+                const category = oldIdToCategory[oldId];
+                if (category && categoryToNewId[category]) {
+                    const newId = categoryToNewId[category];
+                    if (newId !== oldId) {
+                        // Save with new ID
+                        await db.saveServing(newId, servingCount);
+                        console.log(`Migrated servings for ${category}: ${oldId} -> ${newId}`);
+                    }
+                }
+            }
+        }
+        
+        // Clear old foods and save new ones
+        await db.clearFoods();
+        await db.saveFoods(newFoods);
+        AppState.foods = newFoods;
+        
+        console.log('Migration complete');
+    } catch (error) {
+        console.warn('Migration failed:', error);
+    }
 }
 
 /**
@@ -694,8 +757,12 @@ function parseCSVText(csvText) {
         
         if (!foodGroup || !foodCategory) continue;
         
+        // Generate stable ID based on row position and category name (not timestamp)
+        // This ensures IDs remain consistent across reloads
+        const stableId = `food_${i}_${foodCategory.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+        
         foods.push({
-            id: `food_${i}_${Date.now()}`,
+            id: stableId,
             foodGroup,
             foodCategory,
             servingsLow: parseInt(row[cols.servingsLow]) || 0,
