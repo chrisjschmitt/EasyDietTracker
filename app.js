@@ -603,12 +603,23 @@ function findColumn(headers, possibleNames) {
 async function loadFoods() {
     AppState.foods = await db.getAllFoods();
     
-    // If no foods loaded, try to load default data
-    if (AppState.foods.length === 0) {
+    // Validate that loaded foods have required properties
+    const validFoods = AppState.foods.filter(f => 
+        f && f.id && f.foodGroup && f.foodCategory && typeof f.calories === 'number'
+    );
+    
+    console.log(`Loaded ${AppState.foods.length} foods, ${validFoods.length} valid`);
+    
+    // If no valid foods, clear and reload defaults
+    if (validFoods.length === 0) {
+        console.log('No valid foods found, loading defaults...');
+        await db.clearFoods();
         await loadDefaultFoodData();
     } else {
+        AppState.foods = validFoods;
+        
         // Check if foods need ID migration (old timestamp-based IDs)
-        const needsMigration = AppState.foods.some(f => f.id && f.id.match(/^food_\d+_\d{13,}$/));
+        const needsMigration = AppState.foods.some(f => f.id && String(f.id).match(/^food_\d+_\d{13,}$/));
         if (needsMigration) {
             await migrateToStableIds();
         }
