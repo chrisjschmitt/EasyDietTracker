@@ -1490,21 +1490,51 @@ function showBreakdown(nutrient) {
 
 /**
  * Attach click handlers to breakdown items for editing servings
+ * With scroll detection to prevent accidental taps while scrolling
  */
 function attachBreakdownItemListeners() {
+    const MOVE_THRESHOLD = 10; // pixels - if finger moves more than this, it's a scroll
+    
     document.querySelectorAll('.breakdown-item[data-food-id]').forEach(item => {
         const rawId = item.dataset.foodId;
         const foodId = isNaN(parseInt(rawId)) ? rawId : parseInt(rawId);
         
-        // Click handler
-        item.addEventListener('click', () => {
-            closeModals();
-            showServingModal(foodId);
+        let startX = 0;
+        let startY = 0;
+        let hasMoved = false;
+        
+        // Track touch start position
+        item.addEventListener('touchstart', (e) => {
+            hasMoved = false;
+            if (e.touches && e.touches[0]) {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+        
+        // Detect if user is scrolling
+        item.addEventListener('touchmove', (e) => {
+            if (hasMoved) return;
+            if (e.touches && e.touches[0]) {
+                const deltaX = Math.abs(e.touches[0].clientX - startX);
+                const deltaY = Math.abs(e.touches[0].clientY - startY);
+                if (deltaX > MOVE_THRESHOLD || deltaY > MOVE_THRESHOLD) {
+                    hasMoved = true;
+                }
+            }
+        }, { passive: true });
+        
+        // Only open modal if not scrolling
+        item.addEventListener('touchend', (e) => {
+            if (!hasMoved) {
+                e.preventDefault();
+                closeModals();
+                showServingModal(foodId);
+            }
         });
         
-        // Touch handler for mobile
-        item.addEventListener('touchend', (e) => {
-            e.preventDefault();
+        // Click handler for desktop
+        item.addEventListener('click', () => {
             closeModals();
             showServingModal(foodId);
         });
