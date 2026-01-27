@@ -2046,19 +2046,12 @@ async function exportHistory() {
 }
 
 /**
- * Clear cache only - refreshes app code without losing data
+ * Clear app cache only - refreshes app code without losing data
  */
 async function clearCacheAndReload() {
-    if (!confirm('Clear cache and food data, then reload? This will re-download the default food database.')) return;
+    if (!confirm('Clear app cache and reload? Your food log and settings will be preserved.')) return;
     
     try {
-        // Clear IndexedDB data
-        await db.clearFoods();
-        await db.saveSetting('isDefaultData', null);
-        await db.saveSetting('searchFoods', null);
-        await db.saveSetting('foodDatabase', null);
-        await db.saveSetting('hasSeenHelp', null);
-        
         // Unregister service workers
         if ('serviceWorker' in navigator) {
             const registrations = await navigator.serviceWorker.getRegistrations();
@@ -2070,14 +2063,14 @@ async function clearCacheAndReload() {
             }
         }
         
-        // Clear all caches
+        // Clear browser caches (app code only, not IndexedDB)
         if ('caches' in window) {
             const cacheNames = await caches.keys();
             await Promise.all(cacheNames.map(name => caches.delete(name)));
         }
         
         // Wait for cleanup then reload
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 300));
         
         // Pre-fetch to bust HTTP cache
         try {
@@ -2090,6 +2083,45 @@ async function clearCacheAndReload() {
     } catch (error) {
         console.error('Cache clear error:', error);
         alert('Cache clear failed. Try a manual hard refresh (Cmd+Shift+R or Ctrl+Shift+R)');
+    }
+}
+
+/**
+ * Clear all data including food database and servings (full reset)
+ */
+async function clearAllDataAndReload() {
+    if (!confirm('WARNING: This will delete ALL your data including your food log, settings, and custom foods. Continue?')) return;
+    
+    try {
+        // Clear all IndexedDB data
+        await db.clearFoods();
+        await db.saveSetting('isDefaultData', null);
+        await db.saveSetting('searchFoods', null);
+        await db.saveSetting('foodDatabase', null);
+        await db.saveSetting('hasSeenHelp', null);
+        
+        // Clear today's servings
+        await db.resetTodayServings();
+        
+        // Unregister service workers and clear caches
+        if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (const registration of registrations) {
+                await registration.unregister();
+            }
+        }
+        
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+        }
+        
+        // Reload
+        window.location.href = window.location.origin + window.location.pathname + '?v=' + Date.now();
+        
+    } catch (error) {
+        console.error('Data clear error:', error);
+        alert('Data clear failed. Try clearing browser data manually.');
     }
 }
 
