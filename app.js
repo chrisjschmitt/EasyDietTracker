@@ -117,7 +117,9 @@ const AppState = {
     recentFoods: [],
     favorites: [],
     currentSearchFood: null,
-    currentSearchTab: 'search'
+    currentSearchTab: 'search',
+    // Search foods log - foods from search that contribute to totals but don't show as icons
+    searchFoodsLog: {}
 };
 
 // Activity level calorie bonuses
@@ -625,14 +627,8 @@ async function loadFoods() {
         }
     }
     
-    // Load any previously added search foods
-    const searchFoods = await db.getSetting('searchFoods') || [];
-    searchFoods.forEach(food => {
-        // Only add if not already in the list
-        if (!AppState.foods.find(f => f.id === food.id)) {
-            AppState.foods.push(food);
-        }
-    });
+    // Load search foods log (these contribute to totals but don't show as icons)
+    AppState.searchFoodsLog = await db.getSetting('searchFoodsLog') || {};
     
     await loadTodayServings();
     renderFoodGroups();
@@ -1092,7 +1088,8 @@ function updateStats() {
     let totalWaterFromFood = 0;
     let totalSalt = 0;
     
-    AppState.foods.forEach(food => {
+    // Helper to accumulate stats from a food
+    const accumulateFood = (food) => {
         const servings = AppState.servings[food.id] || 0;
         totalCalories += food.calories * servings;
         totalProtein += food.protein * servings;
@@ -1106,7 +1103,13 @@ function updateStats() {
         if (food.ultraProcessed) {
             totalUltraProcessed += servings;
         }
-    });
+    };
+    
+    // Accumulate from main food icons
+    AppState.foods.forEach(accumulateFood);
+    
+    // Also include search foods (they contribute to totals but don't show as icons)
+    Object.values(AppState.searchFoodsLog || {}).forEach(accumulateFood);
     
     // Water now comes only from food contributions
     const totalWater = totalWaterFromFood;
@@ -1517,7 +1520,8 @@ function showBreakdown(nutrient) {
     const contributions = [];
     let total = 0;
     
-    AppState.foods.forEach(food => {
+    // Helper to process a food's contribution
+    const processFood = (food) => {
         const servings = AppState.servings[food.id] || 0;
         if (servings > 0) {
             const value = config.getValue(food) * servings;
@@ -1533,7 +1537,13 @@ function showBreakdown(nutrient) {
                 });
             }
         }
-    });
+    };
+    
+    // Include main food icons
+    AppState.foods.forEach(processFood);
+    
+    // Also include search foods
+    Object.values(AppState.searchFoodsLog || {}).forEach(processFood);
     
     // Sort by contribution (highest first)
     contributions.sort((a, b) => b.value - a.value);
@@ -2182,7 +2192,7 @@ async function clearAllDataAndReload() {
         // Clear all IndexedDB data
         await db.clearFoods();
         await db.saveSetting('isDefaultData', null);
-        await db.saveSetting('searchFoods', null);
+        await db.saveSetting('searchFoodsLog', null);
         await db.saveSetting('foodDatabase', null);
         await db.saveSetting('hasSeenHelp', null);
         
@@ -2549,6 +2559,7 @@ function closeAddFoodModal() {
 
 /**
  * Add searched food to the daily log
+ * Search foods contribute to daily totals but don't appear as icons on the main screen
  */
 async function addSearchedFoodToLog() {
     const food = AppState.currentSearchFood;
@@ -2559,45 +2570,42 @@ async function addSearchedFoodToLog() {
     // Create a food ID for this searched food
     const searchFoodId = `search-${food.id}`;
     
-    // Add to the main foods list if not already there
-    let existingFood = AppState.foods.find(f => f.id === searchFoodId);
+    // Create a food entry compatible with the app's food structure
+    const searchFoodEntry = {
+        id: searchFoodId,
+        foodGroup: food.category,
+        foodCategory: food.name + (food.brand ? ` (${food.brand})` : ''),
+        servingsLow: 0,
+        servingsHigh: 10,
+        servingSize: food.servingSize,
+        calories: food.calories,
+        protein: food.protein,
+        fibre: food.fibre,
+        carbs: food.carbs,
+        sugar: food.sugar,
+        addedSugar: food.addedSugar,
+        totalFat: food.totalFat,
+        saturatedFat: food.saturatedFat,
+        transFat: food.transFat,
+        ultraProcessed: food.ultraProcessed,
+        hydration: food.hydration || 0,
+        salt: food.salt || 0,
+        isSearchFood: true
+    };
     
-    if (!existingFood) {
-        // Create a food entry compatible with the app's food structure
-        existingFood = {
-            id: searchFoodId,
-            foodGroup: food.category,
-            foodCategory: food.name,
-            servingsLow: 0,
-            servingsHigh: 10,
-            servingSize: food.servingSize,
-            calories: food.calories,
-            protein: food.protein,
-            fibre: food.fibre,
-            carbs: food.carbs,
-            sugar: food.sugar,
-            addedSugar: food.addedSugar,
-            totalFat: food.totalFat,
-            saturatedFat: food.saturatedFat,
-            transFat: food.transFat,
-            ultraProcessed: food.ultraProcessed,
-            water: food.hydration || 0,
-            salt: food.salt || 0,
-            isSearchFood: true
-        };
-        
-        AppState.foods.push(existingFood);
-        
-        // Save the search food to a separate list in settings for persistence
-        const searchFoods = await db.getSetting('searchFoods') || [];
-        searchFoods.push(existingFood);
-        await db.saveSetting('searchFoods', searchFoods);
+    // Store in searchFoodsLog (separate from main foods - won't show as icons)
+    if (!AppState.searchFoodsLog) {
+        AppState.searchFoodsLog = {};
     }
+    AppState.searchFoodsLog[searchFoodId] = searchFoodEntry;
+    
+    // Save search foods log for persistence
+    await db.saveSetting('searchFoodsLog', AppState.searchFoodsLog);
     
     // Update servings
-    const currentServings = AppState.servings[existingFood.id] || 0;
-    AppState.servings[existingFood.id] = currentServings + servings;
-    await db.saveServing(existingFood.id, AppState.servings[existingFood.id]);
+    const currentServings = AppState.servings[searchFoodId] || 0;
+    AppState.servings[searchFoodId] = currentServings + servings;
+    await db.saveServing(searchFoodId, AppState.servings[searchFoodId]);
     
     // Add to recent foods
     await addToRecentFoods(food);
@@ -2607,8 +2615,7 @@ async function addSearchedFoodToLog() {
     DOM.searchModal.classList.remove('active');
     AppState.currentSearchFood = null;
     
-    // Re-render and update stats
-    renderFoodGroups();
+    // Update stats only (search foods don't appear as icons)
     updateStats();
 }
 
