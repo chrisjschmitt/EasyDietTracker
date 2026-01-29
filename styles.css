@@ -2648,6 +2648,136 @@ select:focus {
     margin: 0;
 }
 
+/* Similar Food Suggestion Modal */
+.similar-food-modal {
+    max-width: 400px;
+    width: 95%;
+}
+
+.similar-food-header {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.similar-food-header .similar-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: var(--spacing-sm);
+}
+
+.similar-food-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.similar-food-body {
+    padding: 0 var(--spacing-sm);
+}
+
+.similar-suggestion-text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.5;
+}
+
+.similar-food-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.similar-food-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.similar-food-card.recommended {
+    background: rgba(86, 196, 168, 0.1);
+    border-color: rgba(86, 196, 168, 0.3);
+}
+
+.similar-food-card.recommended:hover {
+    background: rgba(86, 196, 168, 0.15);
+    border-color: rgba(86, 196, 168, 0.5);
+}
+
+.similar-food-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.similar-food-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.similar-food-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.similar-food-stats {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.recommended-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--accent-primary);
+    background: rgba(86, 196, 168, 0.2);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+
+.add-anyway-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.similar-or-text {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin: var(--spacing-md) 0;
+}
+
+/* Highlight pulse animation for food items */
+@keyframes highlightPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(86, 196, 168, 0.4);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 20px 10px rgba(86, 196, 168, 0.3);
+        transform: scale(1.05);
+    }
+}
+
+.food-item.highlight-pulse {
+    animation: highlightPulse 0.8s ease-out;
+    z-index: 10;
+    position: relative;
+}
+
 /* Print styles */
 @media print {
     .settings-btn, .reset-btn, .info-btn {

@@ -2533,9 +2533,214 @@ function closeSearchModal() {
 }
 
 /**
+ * Find a similar food in the default database based on nutritional similarity
+ * Returns the matching default food if found, null otherwise
+ */
+function findSimilarDefaultFood(searchFood) {
+    const searchName = searchFood.name.toLowerCase();
+    const searchCals = searchFood.calories;
+    const searchProtein = searchFood.protein;
+    
+    // Keywords to match against default food categories
+    const keywordMappings = [
+        { keywords: ['apple'], category: 'apples' },
+        { keywords: ['banana'], category: 'tropical' },
+        { keywords: ['orange', 'grapefruit', 'clementine', 'citrus'], category: 'citrus' },
+        { keywords: ['strawberr', 'blueberr', 'raspberr', 'berry', 'berries'], category: 'berries' },
+        { keywords: ['peach', 'plum', 'cherry', 'cherries', 'apricot', 'nectarine'], category: 'stone fruit' },
+        { keywords: ['melon', 'watermelon', 'grape'], category: 'melon' },
+        { keywords: ['mango', 'pineapple', 'papaya'], category: 'tropical' },
+        { keywords: ['spinach', 'kale', 'lettuce', 'arugula', 'greens', 'mushroom'], category: 'leafy' },
+        { keywords: ['broccoli', 'cauliflower', 'brussels', 'cabbage'], category: 'cruciferous' },
+        { keywords: ['tomato', 'pepper', 'zucchini', 'squash', 'eggplant', 'cucumber'], category: 'nightshade' },
+        { keywords: ['onion', 'garlic', 'leek', 'shallot'], category: 'allium' },
+        { keywords: ['carrot', 'beet', 'turnip', 'radish'], category: 'root' },
+        { keywords: ['potato', 'sweet potato', 'corn', 'yam'], category: 'starchy' },
+        { keywords: ['oat', 'oatmeal', 'porridge'], category: 'oat' },
+        { keywords: ['rice', 'quinoa', 'farro', 'barley'], category: 'whole grain' },
+        { keywords: ['pasta', 'spaghetti', 'penne', 'linguine', 'noodle'], category: 'pasta' },
+        { keywords: ['bread', 'toast', 'bun', 'roll'], category: 'bread' },
+        { keywords: ['cereal', 'granola', 'muesli'], category: 'cereal' },
+        { keywords: ['chicken'], category: 'poultry' },
+        { keywords: ['turkey'], category: 'poultry' },
+        { keywords: ['salmon', 'tuna', 'cod', 'tilapia', 'fish'], category: 'fish' },
+        { keywords: ['shrimp', 'prawn', 'crab', 'lobster', 'shellfish'], category: 'shellfish' },
+        { keywords: ['beef', 'steak', 'burger'], category: 'red meat' },
+        { keywords: ['pork', 'ham', 'bacon'], category: 'red meat' },
+        { keywords: ['lamb'], category: 'red meat' },
+        { keywords: ['egg'], category: 'egg' },
+        { keywords: ['tofu', 'tempeh', 'edamame'], category: 'plant protein' },
+        { keywords: ['bean', 'lentil', 'chickpea', 'legume'], category: 'legume' },
+        { keywords: ['yogurt', 'yoghurt'], category: 'yogurt' },
+        { keywords: ['milk'], category: 'milk' },
+        { keywords: ['cheese'], category: 'cheese' },
+        { keywords: ['almond', 'walnut', 'cashew', 'peanut', 'pistachio', 'nut'], category: 'nut' },
+        { keywords: ['seed', 'chia', 'flax', 'sunflower'], category: 'seed' }
+    ];
+    
+    // Find which keyword category the search food matches
+    let matchedKeywordCategory = null;
+    for (const mapping of keywordMappings) {
+        if (mapping.keywords.some(kw => searchName.includes(kw))) {
+            matchedKeywordCategory = mapping.category;
+            break;
+        }
+    }
+    
+    // Search through default foods for a match
+    for (const defaultFood of AppState.foods) {
+        // Skip search foods that were previously added
+        if (defaultFood.isSearchFood) continue;
+        
+        const defaultName = defaultFood.foodCategory.toLowerCase();
+        const defaultCals = defaultFood.calories;
+        const defaultProtein = defaultFood.protein;
+        
+        // Check calorie similarity (within 30%)
+        const calDiff = Math.abs(searchCals - defaultCals) / Math.max(searchCals, defaultCals, 1);
+        const calsMatch = calDiff < 0.30;
+        
+        // Check protein similarity (within 50% or both low protein foods)
+        const proteinDiff = Math.abs(searchProtein - defaultProtein) / Math.max(searchProtein, defaultProtein, 1);
+        const proteinMatch = proteinDiff < 0.50 || (searchProtein < 5 && defaultProtein < 5);
+        
+        // Check if names share keywords or if keyword category matches
+        let nameMatch = false;
+        
+        // Direct name overlap check
+        const searchWords = searchName.split(/\s+/).filter(w => w.length > 3);
+        const defaultWords = defaultName.split(/[;\s,()]+/).filter(w => w.length > 3);
+        nameMatch = searchWords.some(sw => defaultWords.some(dw => dw.includes(sw) || sw.includes(dw)));
+        
+        // Check keyword category match
+        if (!nameMatch && matchedKeywordCategory) {
+            nameMatch = defaultName.includes(matchedKeywordCategory) || 
+                        defaultWords.some(dw => matchedKeywordCategory.includes(dw));
+        }
+        
+        // Return match if nutritionally similar AND name/category matches
+        if (calsMatch && proteinMatch && nameMatch) {
+            return defaultFood;
+        }
+    }
+    
+    return null;
+}
+
+/**
  * Show add food modal
  */
 function showAddFoodModal(food) {
+    // Check if there's a similar food in the default database
+    const similarFood = findSimilarDefaultFood(food);
+    
+    if (similarFood) {
+        // Show suggestion to use existing food instead
+        showSimilarFoodSuggestion(food, similarFood);
+        return;
+    }
+    
+    // No similar food found, show regular add food modal
+    showRegularAddFoodModal(food);
+}
+
+/**
+ * Show suggestion modal when a similar food exists in default database
+ */
+function showSimilarFoodSuggestion(searchFood, defaultFood) {
+    AppState.currentSearchFood = searchFood;
+    AppState.suggestedDefaultFood = defaultFood;
+    
+    // Create or update suggestion modal content
+    let suggestionModal = document.getElementById('similarFoodModal');
+    if (!suggestionModal) {
+        suggestionModal = document.createElement('div');
+        suggestionModal.id = 'similarFoodModal';
+        suggestionModal.className = 'modal-overlay';
+        document.body.appendChild(suggestionModal);
+    }
+    
+    suggestionModal.innerHTML = `
+        <div class="modal-content similar-food-modal">
+            <button class="modal-close" id="closeSimilarModal">×</button>
+            <div class="similar-food-header">
+                <span class="similar-icon">💡</span>
+                <h3>Similar Food Found</h3>
+            </div>
+            <div class="similar-food-body">
+                <p class="similar-suggestion-text">
+                    "<strong>${searchFood.name}</strong>" is nutritionally similar to an existing food category:
+                </p>
+                <div class="similar-food-card recommended" id="useSuggestedFood">
+                    <span class="similar-food-icon">${getFoodIcon(defaultFood.foodCategory)}</span>
+                    <div class="similar-food-info">
+                        <div class="similar-food-name">${defaultFood.foodCategory}</div>
+                        <div class="similar-food-stats">${defaultFood.calories} cal • ${defaultFood.protein}g protein</div>
+                    </div>
+                    <span class="recommended-badge">Recommended</span>
+                </div>
+                <p class="similar-or-text">— or —</p>
+                <div class="similar-food-card" id="useSearchFood">
+                    <span class="similar-food-icon">${getSearchFoodIcon(searchFood.category)}</span>
+                    <div class="similar-food-info">
+                        <div class="similar-food-name">${searchFood.name}</div>
+                        <div class="similar-food-stats">${searchFood.calories} cal • ${searchFood.protein}g protein</div>
+                    </div>
+                    <span class="add-anyway-text">Add separately</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    suggestionModal.classList.add('active');
+    
+    // Attach event listeners
+    document.getElementById('closeSimilarModal').addEventListener('click', () => {
+        suggestionModal.classList.remove('active');
+        AppState.suggestedDefaultFood = null;
+    });
+    
+    document.getElementById('useSuggestedFood').addEventListener('click', () => {
+        suggestionModal.classList.remove('active');
+        DOM.searchModal.classList.remove('active');
+        AppState.suggestedDefaultFood = null;
+        AppState.currentSearchFood = null;
+        
+        // Scroll to and highlight the suggested food, then open serving modal
+        scrollToAndHighlightFood(defaultFood.id);
+    });
+    
+    document.getElementById('useSearchFood').addEventListener('click', () => {
+        suggestionModal.classList.remove('active');
+        AppState.suggestedDefaultFood = null;
+        showRegularAddFoodModal(searchFood);
+    });
+}
+
+/**
+ * Scroll to a food item and highlight it, then open serving modal
+ */
+function scrollToAndHighlightFood(foodId) {
+    const foodEl = document.querySelector(`.food-item[data-food-id="${foodId}"]`);
+    if (foodEl) {
+        // Scroll the food item into view
+        foodEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Add highlight animation
+        foodEl.classList.add('highlight-pulse');
+        
+        // After scroll animation, open the serving modal
+        setTimeout(() => {
+            foodEl.classList.remove('highlight-pulse');
+            showServingModal(foodId);
+        }, 800);
+    }
+}
+
+/**
+ * Show the regular add food modal (no similar food found)
+ */
+function showRegularAddFoodModal(food) {
     AppState.currentSearchFood = food;
     
     DOM.addFoodIcon.textContent = getSearchFoodIcon(food.category);
