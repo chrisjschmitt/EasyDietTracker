@@ -2541,6 +2541,8 @@ function findSimilarDefaultFood(searchFood) {
     const searchCals = searchFood.calories;
     const searchProtein = searchFood.protein;
     const searchSatFat = searchFood.saturatedFat || 0;
+    const searchAddedSugar = searchFood.addedSugar || 0;
+    const searchUltraProcessed = searchFood.ultraProcessed || false;
     
     // Keywords to match against default food categories
     const keywordMappings = [
@@ -2597,6 +2599,8 @@ function findSimilarDefaultFood(searchFood) {
         const defaultCals = defaultFood.calories;
         const defaultProtein = defaultFood.protein;
         const defaultSatFat = defaultFood.saturatedFat || 0;
+        const defaultAddedSugar = defaultFood.addedSugar || 0;
+        const defaultUltraProcessed = defaultFood.ultraProcessed || false;
         
         // Check calorie similarity (within 20%)
         const calDiff = Math.abs(searchCals - defaultCals) / Math.max(searchCals, defaultCals, 1);
@@ -2609,6 +2613,18 @@ function findSimilarDefaultFood(searchFood) {
         // Check saturated fat similarity (within 40% or both low sat fat < 2g)
         const satFatDiff = Math.abs(searchSatFat - defaultSatFat) / Math.max(searchSatFat, defaultSatFat, 1);
         const satFatMatch = satFatDiff <= 0.40 || (searchSatFat < 2 && defaultSatFat < 2);
+        
+        // Check added sugar similarity (within 50% or both low < 3g)
+        // Don't match if one has significant added sugar and other doesn't
+        const addedSugarDiff = Math.abs(searchAddedSugar - defaultAddedSugar) / Math.max(searchAddedSugar, defaultAddedSugar, 1);
+        const bothLowSugar = searchAddedSugar < 3 && defaultAddedSugar < 3;
+        const significantSugarMismatch = (searchAddedSugar >= 5 && defaultAddedSugar < 2) || 
+                                          (defaultAddedSugar >= 5 && searchAddedSugar < 2);
+        const addedSugarMatch = bothLowSugar || (addedSugarDiff <= 0.50 && !significantSugarMismatch);
+        
+        // Check ultra-processed status matches
+        // Only suggest if both are processed OR both are whole foods
+        const ultraProcessedMatch = searchUltraProcessed === defaultUltraProcessed;
         
         // Check if names share keywords or if keyword category matches
         let nameMatch = false;
@@ -2625,7 +2641,7 @@ function findSimilarDefaultFood(searchFood) {
         }
         
         // Return match if nutritionally similar AND name/category matches
-        if (calsMatch && proteinMatch && satFatMatch && nameMatch) {
+        if (calsMatch && proteinMatch && satFatMatch && addedSugarMatch && ultraProcessedMatch && nameMatch) {
             return defaultFood;
         }
     }
