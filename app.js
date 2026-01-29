@@ -2540,6 +2540,7 @@ function findSimilarDefaultFood(searchFood) {
     const searchName = searchFood.name.toLowerCase();
     const searchCals = searchFood.calories;
     const searchProtein = searchFood.protein;
+    const searchSatFat = searchFood.saturatedFat || 0;
     
     // Keywords to match against default food categories
     const keywordMappings = [
@@ -2595,14 +2596,19 @@ function findSimilarDefaultFood(searchFood) {
         const defaultName = defaultFood.foodCategory.toLowerCase();
         const defaultCals = defaultFood.calories;
         const defaultProtein = defaultFood.protein;
+        const defaultSatFat = defaultFood.saturatedFat || 0;
         
-        // Check calorie similarity (within 30%)
+        // Check calorie similarity (within 20%)
         const calDiff = Math.abs(searchCals - defaultCals) / Math.max(searchCals, defaultCals, 1);
-        const calsMatch = calDiff < 0.30;
+        const calsMatch = calDiff <= 0.20;
         
-        // Check protein similarity (within 50% or both low protein foods)
+        // Check protein similarity (within 30% or both low protein foods < 3g)
         const proteinDiff = Math.abs(searchProtein - defaultProtein) / Math.max(searchProtein, defaultProtein, 1);
-        const proteinMatch = proteinDiff < 0.50 || (searchProtein < 5 && defaultProtein < 5);
+        const proteinMatch = proteinDiff <= 0.30 || (searchProtein < 3 && defaultProtein < 3);
+        
+        // Check saturated fat similarity (within 40% or both low sat fat < 2g)
+        const satFatDiff = Math.abs(searchSatFat - defaultSatFat) / Math.max(searchSatFat, defaultSatFat, 1);
+        const satFatMatch = satFatDiff <= 0.40 || (searchSatFat < 2 && defaultSatFat < 2);
         
         // Check if names share keywords or if keyword category matches
         let nameMatch = false;
@@ -2619,7 +2625,7 @@ function findSimilarDefaultFood(searchFood) {
         }
         
         // Return match if nutritionally similar AND name/category matches
-        if (calsMatch && proteinMatch && nameMatch) {
+        if (calsMatch && proteinMatch && satFatMatch && nameMatch) {
             return defaultFood;
         }
     }
