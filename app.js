@@ -2671,16 +2671,16 @@ function showSimilarFoodSuggestion(searchFood, defaultFood) {
                 <p class="similar-suggestion-text">
                     "<strong>${searchFood.name}</strong>" is nutritionally similar to an existing food category:
                 </p>
-                <div class="similar-food-card recommended" id="useSuggestedFood">
+                <div class="similar-food-card recommended" id="useSuggestedFood" role="button" tabindex="0">
                     <span class="similar-food-icon">${getFoodIcon(defaultFood.foodCategory)}</span>
                     <div class="similar-food-info">
                         <div class="similar-food-name">${defaultFood.foodCategory}</div>
                         <div class="similar-food-stats">${defaultFood.calories} cal • ${defaultFood.protein}g protein</div>
                     </div>
-                    <span class="recommended-badge">Recommended</span>
+                    <span class="recommended-badge">Use this</span>
                 </div>
                 <p class="similar-or-text">— or —</p>
-                <div class="similar-food-card" id="useSearchFood">
+                <div class="similar-food-card" id="useSearchFood" role="button" tabindex="0">
                     <span class="similar-food-icon">${getSearchFoodIcon(searchFood.category)}</span>
                     <div class="similar-food-info">
                         <div class="similar-food-name">${searchFood.name}</div>
@@ -2694,26 +2694,64 @@ function showSimilarFoodSuggestion(searchFood, defaultFood) {
     
     suggestionModal.classList.add('active');
     
-    // Attach event listeners
-    document.getElementById('closeSimilarModal').addEventListener('click', () => {
-        suggestionModal.classList.remove('active');
-        AppState.suggestedDefaultFood = null;
-    });
-    
-    document.getElementById('useSuggestedFood').addEventListener('click', () => {
+    // Helper to handle closing and selecting suggested food
+    const handleUseSuggested = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         suggestionModal.classList.remove('active');
         DOM.searchModal.classList.remove('active');
         AppState.suggestedDefaultFood = null;
         AppState.currentSearchFood = null;
-        
         // Scroll to and highlight the suggested food, then open serving modal
         scrollToAndHighlightFood(defaultFood.id);
-    });
+    };
     
-    document.getElementById('useSearchFood').addEventListener('click', () => {
+    // Helper to handle adding search food separately
+    const handleUseSearch = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         suggestionModal.classList.remove('active');
         AppState.suggestedDefaultFood = null;
         showRegularAddFoodModal(searchFood);
+    };
+    
+    // Helper to close modal
+    const handleClose = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        suggestionModal.classList.remove('active');
+        AppState.suggestedDefaultFood = null;
+    };
+    
+    // Get elements
+    const closeBtn = document.getElementById('closeSimilarModal');
+    const suggestedBtn = document.getElementById('useSuggestedFood');
+    const searchBtn = document.getElementById('useSearchFood');
+    
+    // Remove old listeners by cloning (in case modal is reused)
+    const newCloseBtn = closeBtn.cloneNode(true);
+    const newSuggestedBtn = suggestedBtn.cloneNode(true);
+    const newSearchBtn = searchBtn.cloneNode(true);
+    
+    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+    suggestedBtn.parentNode.replaceChild(newSuggestedBtn, suggestedBtn);
+    searchBtn.parentNode.replaceChild(newSearchBtn, searchBtn);
+    
+    // Attach click and touch event listeners
+    newCloseBtn.addEventListener('click', handleClose);
+    newCloseBtn.addEventListener('touchend', handleClose);
+    
+    newSuggestedBtn.addEventListener('click', handleUseSuggested);
+    newSuggestedBtn.addEventListener('touchend', handleUseSuggested);
+    
+    newSearchBtn.addEventListener('click', handleUseSearch);
+    newSearchBtn.addEventListener('touchend', handleUseSearch);
+    
+    // Close on backdrop click
+    suggestionModal.addEventListener('click', (e) => {
+        if (e.target === suggestionModal) {
+            handleClose(e);
+        }
     });
 }
 
