@@ -1850,7 +1850,11 @@ function showNutrientInfo(nutrient) {
  * Show serving input modal
  */
 function showServingModal(foodId) {
-    const food = AppState.foods.find(f => f.id === foodId);
+    // Look in main foods first, then in search foods log
+    let food = AppState.foods.find(f => f.id === foodId);
+    if (!food && AppState.searchFoodsLog) {
+        food = AppState.searchFoodsLog[foodId];
+    }
     if (!food) return;
     
     AppState.currentFoodId = foodId;
