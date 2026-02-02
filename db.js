@@ -226,8 +226,19 @@ class Database {
     /**
      * Get today's date string
      */
+    /** Commented out as was returning UTC date
     getTodayKey() {
         return new Date().toISOString().split('T')[0];
+    }
+    */
+
+    //New code to return date in local time, not UTC
+    getTodayKey() {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
     /**
