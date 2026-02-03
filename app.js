@@ -1990,7 +1990,8 @@ async function logDay() {
     let totalSatTransFat = 0;
     let totalFibre = 0;
     let totalAddedSugar = 0;
-    
+
+    /** This code is not counting foods found from search when logging days total
     AppState.foods.forEach(food => {
         const servings = AppState.servings[food.id] || 0;
         totalCalories += food.calories * servings;
@@ -2000,6 +2001,20 @@ async function logDay() {
         totalFibre += food.fibre * servings;
         totalAddedSugar += (food.addedSugar || 0) * servings;
     });
+    */
+//New code to count foods found from search when logging day's total
+    const accumulate = (food) => {
+    const servings = AppState.servings[food.id] || 0;
+      totalCalories += (food.calories || 0) * servings;
+      totalProtein  += (food.protein  || 0) * servings;
+      totalCarbs    += (food.carbs    || 0) * servings;
+      totalSatTransFat += ((food.saturatedFat || 0) + (food.transFat || 0)) * servings;
+      totalFibre    += (food.fibre    || 0) * servings;
+      totalAddedSugar += (food.addedSugar || 0) * servings;
+    };
+
+    AppState.foods.forEach(accumulate);
+    Object.values(AppState.searchFoodsLog || {}).forEach(accumulate);
     
     const today = db.getTodayKey();
     const logEntry = {
