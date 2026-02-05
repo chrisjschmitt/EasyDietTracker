@@ -191,6 +191,11 @@ The default database (`default-data.csv`) includes these columns:
 
 ## Version History
 
+- **v1.23.x** - Added sweetened yogurts, pastries, breakfast cereals; bug fixes for daily tracking and local time
+- **v1.22.x** - Smart food matching: suggest existing food icons for similar searches, added sugar/ultra-processed matching criteria
+- **v1.21.x** - Added fried chicken, pita bread, and naan to food database
+- **v1.20.x** - Search foods contribute to totals without appearing as icons, editable servings from breakdown
+- **v1.19.x** - Comprehensive README update with all features documented
 - **v1.18.x** - Stable food IDs, data persistence fixes, validation
 - **v1.17.x** - Added banana to tropical fruits
 - **v1.16.x** - New app icon, iOS alignment fixes
