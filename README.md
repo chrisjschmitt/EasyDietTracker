@@ -4,6 +4,8 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
 
 ![EasyDiet Tracker](icons/icon-512.png)
 
+**Current version:** `1.23.1` (see `VERSION`)
+
 ## Features
 
 ### 📊 Comprehensive Nutritional Tracking
@@ -78,8 +80,9 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
    # Using Python 3
    python3 -m http.server 8080
    
-   # Using Node.js
-   npx serve
+   # Using Node.js (pick one)
+   npx serve --listen 8080
+   npx http-server -p 8080
    
    # Using PHP
    php -S localhost:8080
@@ -87,7 +90,9 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
 
 2. **Open in browser**: Navigate to `http://localhost:8080`
 
-3. **Start tracking**: The default food database loads automatically!
+3. **Start tracking**: On first launch, the default database in `default-data.csv` is automatically loaded into IndexedDB.
+
+> Note: PWA install/offline support requires `localhost` or HTTPS (most browsers block service workers on plain HTTP origins).
 
 ### Running Tests
 
@@ -140,27 +145,32 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
 
 ## Food Data Format
 
-The default database (`default-data.csv`) includes these columns:
+### Default database (`default-data.csv`)
 
-| Column | Description | Example |
-|--------|-------------|---------|
-| Food Group | Category group | "Fruits", "Proteins" |
-| Food Category | Specific food | "Berries (strawberries; blueberries)" |
-| Servings Low | Minimum recommended | 1 |
-| Servings High | Maximum recommended | 3 |
-| Serving Size | Portion description | "Cupped hand" |
-| Calories | Per serving | 70 |
-| Protein | Grams | 1.1 |
-| Fibre | Grams | 4 |
-| Carbs | Grams | 17 |
-| Sugar | Grams | 10 |
-| Added Sugar | Grams | 0 |
-| Total Fat | Grams | 0.4 |
-| Saturated Fat | Grams | 0.3 |
-| Trans Fat | Grams | 0.1 |
-| Ultra-Processed | true/false | false |
-| Hydration | Cups water | 0.7 |
-| Salt | Milligrams | 1 |
+The shipped CSV includes a richer set of fat fields (e.g. unsaturated/mono/poly) in addition to what the UI tracks. The app matches columns by header name; unknown/extra columns are ignored.
+
+### Importing your own file (XLS/XLSX/CSV)
+
+The importer is header-based and relatively forgiving about column naming. At minimum you need:
+
+- **`Food Group`**
+- **`Food Category`**
+- **`Calories`**
+
+Highly recommended columns:
+
+- **`Servings Low`**, **`Servings High`**
+- **`Serving Size`**
+- **`Protein`**, **`Fibre`**, **`Carbs`**, **`Sugar`**
+
+Optional supported columns:
+
+- **`Servings Median`** (used for the “goal reached” ✓ checkmark on a food card)
+- **`Added Sugar`**
+- **`Total Fat`**, **`Saturated Fat`**, **`Trans Fat`**
+- **`Ultra-processed`** (`true`/`false`)
+- **`Hydration`** (cups of water contributed by the food)
+- **`Salt`** / **`Sodium`** (mg)
 
 ## Installing as PWA
 
@@ -191,14 +201,10 @@ The default database (`default-data.csv`) includes these columns:
 
 ## Version History
 
+- **v1.23.x** - Default data auto-load, history export, search database, offline/PWA caching
 - **v1.18.x** - Stable food IDs, data persistence fixes, validation
-- **v1.17.x** - Added banana to tropical fruits
-- **v1.16.x** - New app icon, iOS alignment fixes
 - **v1.15.x** - Searchable food database, help system, cache improvements
-- **v1.14.x** - Navigation improvements, back-to-top button
 - **v1.13.x** - Salt/sodium tracking, hydration fixes
-- **v1.12.x** - Info buttons, educational content
-- **v1.11.x** - Water tracking, confirmation dialogs
 
 ## License
 
