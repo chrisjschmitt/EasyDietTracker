@@ -2,6 +2,8 @@
 
 A Progressive Web App (PWA) for tracking daily food consumption with comprehensive nutritional monitoring.
 
+**Current Version:** v1.23.1 (see `VERSION`)
+
 ![EasyDiet Tracker](icons/icon-512.png)
 
 ## Features
@@ -9,6 +11,7 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
 ### 📊 Comprehensive Nutritional Tracking
 
 - **Calorie Ring**: Visual circular progress showing daily calorie consumption vs target
+- **Exercise Calories**: Add activity calories to adjust your daily target
 - **Protein Tracker**: Monitor daily protein intake with customizable goals
 - **Hydration Tracker**: Track water intake from food contributions (cups)
 - **Saturated/Trans Fat**: Warning system for foods with ≥5g saturated/trans fat per serving
@@ -21,6 +24,8 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
 
 - **Default Food Database**: 70+ food categories organized by food groups, ready to use
 - **Searchable Food Database**: 200+ common foods with detailed nutrition data
+- **Import Food Data**: Load your own XLS/XLSX/CSV food list from Settings
+- **Sample File Included**: Use `sample-data.csv` to test imports
 - **Food Groups**: Fruits, Vegetables, Proteins, Grains, Dairy, Fats, Snacks, Beverages, and more
 - **Hand-Based Serving Sizes**: Intuitive portion descriptions (fist, palm, cupped hand, etc.)
 - **Recent Foods**: Quick access to recently logged foods
@@ -33,6 +38,12 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
 - **Serving Size Display**: See portion size when adjusting servings
 - **Scroll Detection**: Prevents accidental taps while scrolling through lists
 - **Progress Bar Breakdown**: Tap any tracker to see which foods contributed
+
+### 🧾 Logging & History
+
+- **Log Daily Totals**: Save calories and macros for today with one tap
+- **History View**: Review or delete past days from the history modal
+- **CSV Export**: Download logged history as a CSV file
 
 ### ℹ️ Educational Content
 
@@ -51,6 +62,7 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
 - **Calorie Targets**: Set base calories and activity level bonuses
 - **Macro Targets**: Customize goals for protein, carbs, fat, fibre, sugar
 - **Water Target**: Set daily hydration goals
+- **Unit System**: Toggle between metric and imperial
 - **Salt Range**: Configure minimum and maximum sodium targets
 - **Ultra-Processed Limit**: Set maximum daily servings
 
@@ -66,6 +78,7 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
 - **Stable Food IDs**: Your logged data persists across app updates
 - **IndexedDB Storage**: All data stored locally on your device
 - **Cache Management**: Long-press reset clears app cache without losing data
+- **Daily Log History**: Logged days are stored locally and can be exported
 - **Auto-Recovery**: Invalid data is automatically detected and repaired
 
 ## Getting Started
@@ -92,7 +105,7 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
 ### Running Tests
 
 1. Open the app in your browser at `http://localhost:8080`
-2. Open DevTools Console (Cmd+Option+J on Mac, Ctrl+Shift+J on Windows)
+2. Open DevTools Console (Cmd+Option+J on Mac, Ctrl+Shift+J on Windows/Linux)
 3. Run: `runTests()`
 
 ## Usage
@@ -112,6 +125,17 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
 - Tap any **progress bar** (protein, water, fat, etc.) to see which foods contributed
 - Tap any item in the breakdown to adjust its serving size
 
+### Logging & History
+
+- Tap the **save icon** to log today's totals (calories + macros)
+- Tap the **history icon** to view or delete past entries
+- Use **Export CSV** in the history modal to download your log
+
+### Exercise Calories
+
+- Tap the **🏃** button in the calorie ring to add exercise calories
+- Use presets or enter a custom amount to adjust your daily target
+
 ### Resetting Daily Counts
 
 - **Tap** the reset button (↻) to clear all servings for today (with confirmation)
@@ -122,6 +146,12 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
 - Tap the **🔍** search button to find foods from the extended database
 - Access **Recent** and **Favorite** foods from the search modal
 - Add searched foods to your daily log
+
+### Importing Food Data
+
+- Go to **Settings → Food Database**
+- Drag & drop or select an **XLS/XLSX/CSV** file
+- Use **Clear Data** to remove imported foods and reload defaults
 
 ### Settings
 
@@ -140,7 +170,10 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
 
 ## Food Data Format
 
-The default database (`default-data.csv`) includes these columns:
+The import parser accepts **.xls/.xlsx/.csv** files and matches headers flexibly
+(case-insensitive with common name variations). Extra columns are ignored.
+
+**Recommended columns (minimum set):**
 
 | Column | Description | Example |
 |--------|-------------|---------|
@@ -154,13 +187,22 @@ The default database (`default-data.csv`) includes these columns:
 | Fibre | Grams | 4 |
 | Carbs | Grams | 17 |
 | Sugar | Grams | 10 |
-| Added Sugar | Grams | 0 |
 | Total Fat | Grams | 0.4 |
+
+**Optional columns (supported if present):**
+
+| Column | Description | Example |
+|--------|-------------|---------|
+| Servings Median | Recommended servings | 2 |
+| Added Sugar | Grams | 0 |
 | Saturated Fat | Grams | 0.3 |
 | Trans Fat | Grams | 0.1 |
 | Ultra-Processed | true/false | false |
 | Hydration | Cups water | 0.7 |
 | Salt | Milligrams | 1 |
+
+The default database (`default-data.csv`) includes additional nutrition fields,
+and `sample-data.csv` provides a compact example for testing imports.
 
 ## Installing as PWA
 
@@ -191,6 +233,7 @@ The default database (`default-data.csv`) includes these columns:
 
 ## Version History
 
+- **v1.23.x** - History logging/export, exercise calories, spreadsheet imports, unit system toggle
 - **v1.18.x** - Stable food IDs, data persistence fixes, validation
 - **v1.17.x** - Added banana to tropical fruits
 - **v1.16.x** - New app icon, iOS alignment fixes
