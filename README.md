@@ -20,8 +20,8 @@ A Progressive Web App (PWA) for tracking daily food consumption with comprehensi
 ### 🍎 Food Management
 
 - **Default Food Database**: 70+ food categories organized by food groups, ready to use
-- **Searchable Food Database**: 200+ common foods with detailed nutrition data
-- **Food Groups**: Fruits, Vegetables, Proteins, Grains, Dairy, Fats, Snacks, Beverages, and more
+- **Searchable Food Database**: 280+ common foods with detailed nutrition data
+- **Food Groups**: Fruits, Vegetables, Proteins, Grains, Dairy, Fats, Snacks, Beverages (including wines, beers, spirits, and cocktails), and more
 - **Hand-Based Serving Sizes**: Intuitive portion descriptions (fist, palm, cupped hand, etc.)
 - **Recent Foods**: Quick access to recently logged foods
 - **Favorite Foods**: Save frequently consumed foods for easy access
@@ -191,6 +191,7 @@ The default database (`default-data.csv`) includes these columns:
 
 ## Version History
 
+- **v1.24.0** - Expanded alcoholic drinks database (77 new items: wines, beers, spirits, liqueurs, cocktails)
 - **v1.18.x** - Stable food IDs, data persistence fixes, validation
 - **v1.17.x** - Added banana to tropical fruits
 - **v1.16.x** - New app icon, iOS alignment fixes
