@@ -2328,13 +2328,18 @@ async function loadFoodDatabase() {
     } catch (error) {
         console.error('Error loading food database:', error);
         // Fallback to cache on network error
-        const cachedDatabase = await db.getSetting('foodDatabase');
-        if (cachedDatabase && cachedDatabase.length > 0) {
-            AppState.foodDatabase = cachedDatabase;
-            console.log(`Food database loaded from cache (offline): ${cachedDatabase.length} items`);
-        } else {
-            AppState.foodDatabase = [];
+        try {
+            const cachedDatabase = await db.getSetting('foodDatabase');
+            if (cachedDatabase && cachedDatabase.length > 0) {
+                AppState.foodDatabase = cachedDatabase;
+                console.log(`Food database loaded from cache (offline): ${cachedDatabase.length} items`);
+                return;
+            }
+        } catch (dbError) {
+            console.error('Error accessing IndexedDB cache:', dbError);
         }
+        // Final fallback: empty array
+        AppState.foodDatabase = [];
     }
 }
 

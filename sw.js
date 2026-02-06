@@ -3,7 +3,7 @@
  * Provides offline functionality for the PWA
  */
 
-const CACHE_NAME = 'easydiet-1.24.2';
+const CACHE_NAME = 'easydiet-1.24.3';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
