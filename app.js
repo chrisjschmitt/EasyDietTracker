@@ -2297,29 +2297,44 @@ async function clearFoodData() {
  */
 async function loadFoodDatabase() {
     try {
-        // Check if already loaded in IndexedDB
-        const cachedDatabase = await db.getSetting('foodDatabase');
-        if (cachedDatabase && cachedDatabase.length > 0) {
-            AppState.foodDatabase = cachedDatabase;
-            console.log(`Food database loaded from cache: ${cachedDatabase.length} items`);
-            return;
-        }
-        
-        // Fetch from JSON file
+        // Always fetch the JSON to check version
         const response = await fetch('food-database.json');
         if (!response.ok) {
             throw new Error('Failed to load food database');
         }
         
         const data = await response.json();
-        AppState.foodDatabase = data.foods || [];
+        const newVersion = data.lastUpdated || '';
+        const newFoods = data.foods || [];
         
-        // Cache in IndexedDB
+        // Check cached version
+        const cachedVersion = await db.getSetting('foodDatabaseVersion');
+        const cachedDatabase = await db.getSetting('foodDatabase');
+        
+        // Use cache only if version matches and cache exists
+        if (cachedVersion === newVersion && cachedDatabase && cachedDatabase.length > 0) {
+            AppState.foodDatabase = cachedDatabase;
+            console.log(`Food database loaded from cache: ${cachedDatabase.length} items (v${cachedVersion})`);
+            return;
+        }
+        
+        // Update with new data
+        AppState.foodDatabase = newFoods;
+        
+        // Cache in IndexedDB with version
         await db.saveSetting('foodDatabase', AppState.foodDatabase);
-        console.log(`Food database loaded: ${AppState.foodDatabase.length} items`);
+        await db.saveSetting('foodDatabaseVersion', newVersion);
+        console.log(`Food database updated: ${AppState.foodDatabase.length} items (v${newVersion})`);
     } catch (error) {
         console.error('Error loading food database:', error);
-        AppState.foodDatabase = [];
+        // Fallback to cache on network error
+        const cachedDatabase = await db.getSetting('foodDatabase');
+        if (cachedDatabase && cachedDatabase.length > 0) {
+            AppState.foodDatabase = cachedDatabase;
+            console.log(`Food database loaded from cache (offline): ${cachedDatabase.length} items`);
+        } else {
+            AppState.foodDatabase = [];
+        }
     }
 }
 
